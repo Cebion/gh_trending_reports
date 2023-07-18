@@ -64,5 +64,5 @@ env = Environment(loader=FileSystemLoader('.'))
 template = env.get_template('template.html')
 
 # Render the template with the data and write it to an HTML file
-with open('output.html', 'w') as f:
+with open('index.html', 'w') as f:
     f.write(template.render(repos=repos))
