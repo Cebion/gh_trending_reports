@@ -55,7 +55,8 @@ for query in queries:
             'name': repo['name'], 
             'url': repo['html_url'], 
             'stars': repo['stargazers_count'], 
-            'description': repo['description'] or "No description provided."
+            'description': repo['description'] or "No description provided.",
+            'creation_date': repo['created_at']  # Add the creation date
         } for repo in data['items']
     ])
 
