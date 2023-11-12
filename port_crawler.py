@@ -16,7 +16,6 @@ def main():
     # Create a list of search queries
     queries = [
         'topic:game',
-        'topic:godot',
         'topic:love',
         'topic:löve',
         'topic:love2d',
