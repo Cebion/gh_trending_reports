@@ -10,12 +10,14 @@ def main():
     access_token = os.getenv("GH_TOKEN")
 
     # Calculate the date two weeks ago
-    two_weeks_ago = datetime.now() - timedelta(weeks=2)
+    two_weeks_ago = datetime.now() - timedelta(weeks=4)
     two_weeks_ago_str = two_weeks_ago.strftime('%Y-%m-%d')
 
     # Create a list of search queries
     queries = [
         'topic:game',
+        'topic:game port',
+        'topic:godot',
         'topic:love',
         'topic:löve',
         'topic:love2d',
