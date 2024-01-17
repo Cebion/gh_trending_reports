@@ -15,15 +15,15 @@ def main():
 
     # Create a list of search queries
     queries = [
-        'topic:game',
         'topic:game port',
         'topic:godot',
         'topic:love',
         'topic:löve',
         'topic:love2d',
-        'topic:sdl2',
         'topic:"sdl port"',
-        'topic:"sdl2 port"'
+        'topic:"sdl2 port"',
+        'topic:"decompil game"',
+        'topic:"reverse engine"'
     ]
 
     # Prepare data for the HTML template
