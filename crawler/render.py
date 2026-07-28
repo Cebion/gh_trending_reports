@@ -21,9 +21,11 @@ def _is_pending(record):
 
 def _is_relevant(record):
     classification = record.get("classification")
-    return bool(classification) and classification.get("relevant") is True and (
-        classification.get("confidence", 0) >= config.RELEVANT_CONFIDENCE_THRESHOLD
-    )
+    if not classification or classification.get("relevant") is not True:
+        return False
+    if classification.get("category") in config.EXCLUDED_CATEGORIES:
+        return False
+    return classification.get("confidence", 0) >= config.RELEVANT_CONFIDENCE_THRESHOLD
 
 
 def _is_excluded(record):
@@ -32,8 +34,21 @@ def _is_excluded(record):
         return False
     if classification.get("relevant") is False:
         return True
+    if classification.get("category") in config.EXCLUDED_CATEGORIES:
+        return True
     # relevant=True but below the display confidence threshold ("borderline")
     return classification.get("confidence", 0) < config.RELEVANT_CONFIDENCE_THRESHOLD
+
+
+def _exclusion_reason(record):
+    """The model's own reason usually reads oddly under "excluded as noise"
+    when the actual cause was a category override (e.g. it judged an
+    emulator core relevant, but emulators are out of scope by user
+    preference) -- surface that distinction instead of the raw reason."""
+    classification = record.get("classification") or {}
+    if classification.get("relevant") is True and classification.get("category") in config.EXCLUDED_CATEGORIES:
+        return f"Excluded by category preference ({classification.get('category')})"
+    return classification.get("reason", "")
 
 
 def _view(record):
@@ -78,11 +93,17 @@ def build_sections(state, today_str):
     new_repos.sort(key=_current_stars, reverse=True)
     rising_repos.sort(key=lambda r: _view(r)["star_delta"], reverse=True)
 
+    excluded_views = []
+    for r in excluded_repos:
+        view = _view(r)
+        view["reason"] = _exclusion_reason(r)
+        excluded_views.append(view)
+
     return {
         "new": [_view(r) for r in new_repos],
         "rising": [_view(r) for r in rising_repos],
         "archive": [_view(r) for r in archive_repos],
-        "excluded": [_view(r) for r in excluded_repos],
+        "excluded": excluded_views,
         "summary": {
             "new_count": len(new_repos),
             "rising_count": len(rising_repos),

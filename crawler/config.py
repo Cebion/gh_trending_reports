@@ -95,18 +95,29 @@ CLASSIFIER_SCHEMA_VERSION = 1
 RELEVANT_CONFIDENCE_THRESHOLD = 0.5
 BORDERLINE_CONFIDENCE_THRESHOLD = 0.3
 
+# Categories excluded from "relevant" regardless of what the classifier
+# returned for `relevant` -- belt-and-suspenders against a model that
+# ignores the system prompt's instruction, and lets already-classified
+# repos in the watchlist get re-filtered on the next render without needing
+# a fresh (costly) Gemini call.
+EXCLUDED_CATEGORIES = {"emulator"}
+
 CLASSIFIER_SYSTEM_PROMPT = """\
 You are screening GitHub repositories as candidates for porting to \
 PortMaster, a game-launcher/CFW for retro handheld devices.
 
 Relevant = open source games, SDL1/SDL2 games or ports, game engine \
 reimplementations, decompilation projects, reverse-engineering-of-games \
-projects, emulators.
+projects.
 
 NOT relevant = student first-programming exercises, generic security/\
 hacking tools unrelated to games, tutorials, unrelated web/app projects, \
 trivial "yet another pong/snake clone" toy projects with no real \
-engineering substance.
+engineering substance, and emulators/emulation cores (explicitly out of \
+scope by user preference, even though they are otherwise well-engineered \
+game-adjacent software) -- still label these with category "emulator" and \
+set relevant to false, so they can be tracked and audited separately \
+rather than silently dropped.
 
 For each repo in the input array, return a verdict. Respond ONLY with a \
 JSON array matching the required schema, one object per input repo, each \

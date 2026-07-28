@@ -1,162 +1,409 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>PortMaster Candidate Scout</title>
-    <link href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/colreorder/1.5.3/css/colReorder.dataTables.min.css" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/colreorder/1.5.3/js/dataTables.colReorder.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
-    <style>
-        .badge-new { background-color: #28a745; color: #fff; }
-        .badge-rising { background-color: #fd7e14; color: #fff; }
-        .reason-cell { max-width: 320px; font-size: 0.9em; color: #555; }
-        .card-repo { margin-bottom: 1rem; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PortMaster Candidate Scout</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --bg-elevated: #ffffff;
+    --text: #1a1d23;
+    --text-muted: #5b6270;
+    --border: #e1e4e9;
+    --accent: #2563eb;
+    --accent-soft: #eaf1ff;
+    --new: #1a9c56;
+    --new-soft: #e4f7ec;
+    --rising: #c2600a;
+    --rising-soft: #fdf0e0;
+    --shadow: 0 1px 2px rgba(20, 20, 30, 0.06), 0 1px 8px rgba(20, 20, 30, 0.05);
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161a;
+    --bg-elevated: #1d2026;
+    --text: #e7e9ee;
+    --text-muted: #97a0b0;
+    --border: #2c3038;
+    --accent: #6ea2ff;
+    --accent-soft: #1c2c4a;
+    --new: #4fd484;
+    --new-soft: #10301f;
+    --rising: #f2a24d;
+    --rising-soft: #3a2712;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 8px rgba(0, 0, 0, 0.25);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161a;
+      --bg-elevated: #1d2026;
+      --text: #e7e9ee;
+      --text-muted: #97a0b0;
+      --border: #2c3038;
+      --accent: #6ea2ff;
+      --accent-soft: #1c2c4a;
+      --new: #4fd484;
+      --new-soft: #10301f;
+      --rising: #f2a24d;
+      --rising-soft: #3a2712;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 8px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 4rem;
+  }
+
+  header.top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  header.top h1 { font-size: 1.5rem; margin: 0 0 0.15rem; }
+  header.top .run-date { color: var(--text-muted); font-size: 0.9rem; }
+
+  #theme-toggle {
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 0.45rem 0.7rem;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    flex: none;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .stat {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    box-shadow: var(--shadow);
+  }
+  .stat strong { color: var(--text); }
+
+  h2.section-title {
+    font-size: 1.15rem;
+    margin: 2.25rem 0 0.9rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .empty-note { color: var(--text-muted); font-size: 0.9rem; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.9rem;
+  }
+  .card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .card .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  .badge-new { background: var(--new-soft); color: var(--new); }
+  .badge-rising { background: var(--rising-soft); color: var(--rising); }
+  .badge-category { background: var(--accent-soft); color: var(--accent); }
+  .card h3 { margin: 0; font-size: 1rem; }
+  .card h3 a { color: var(--text); }
+  .card p { margin: 0; font-size: 0.9rem; }
+  .card .reason { color: var(--text-muted); font-style: italic; }
+  .card .meta { color: var(--text-muted); font-size: 0.8rem; }
+
+  .table-wrap {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  #search-box {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  table.archive {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    min-width: 720px;
+  }
+  table.archive th, table.archive td {
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.archive th {
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  table.archive th:hover { color: var(--text); }
+  table.archive tbody tr:hover { background: var(--accent-soft); }
+  .muted-cell { color: var(--text-muted); }
+
+  details.excluded { margin-top: 2rem; }
+  details.excluded summary {
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    padding: 0.5rem 0;
+  }
+  details.excluded .table-wrap { margin-top: 0.75rem; }
+
+  footer.page-footer {
+    margin-top: 3rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 1rem 0.75rem 3rem; }
+    header.top h1 { font-size: 1.25rem; }
+    table.archive { min-width: 0; }
+    table.archive thead { display: none; }
+    table.archive tr {
+      display: block;
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 0.75rem;
+    }
+    table.archive td {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-bottom: none;
+      padding: 0.25rem 0;
+    }
+    table.archive td::before {
+      content: attr(data-label);
+      color: var(--text-muted);
+      font-weight: 600;
+      flex: none;
+      margin-right: 0.75rem;
+    }
+  }
+</style>
 </head>
 <body>
-    <div class="container py-5">
-        <h1 class="mb-2">PortMaster Candidate Scout</h1>
-        <p class="text-muted">Run: {{ run_date }}</p>
-
-        <div class="row mb-4">
-            <div class="col">
-                <span class="badge badge-secondary mr-2">{{ summary.new_count }} new</span>
-                <span class="badge badge-secondary mr-2">{{ summary.rising_count }} rising</span>
-                <span class="badge badge-secondary mr-2">{{ summary.tracked_relevant_count }} tracked</span>
-                <span class="badge badge-secondary mr-2">{{ summary.pending_count }} awaiting classification</span>
-                <span class="badge badge-secondary">{{ summary.excluded_count }} excluded as noise</span>
-            </div>
-        </div>
-
-        <h2 class="mb-3">New this week</h2>
-        {% if new %}
-        <div class="row">
-            {% for repo in new %}
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        {% if repo.category %}<span class="badge badge-info mb-2">{{ repo.category }}</span>{% endif %}
-                        <h5 class="card-title"><a href="{{ repo.url }}">{{ repo.full_name }}</a></h5>
-                        <p class="card-text">{{ repo.description }}</p>
-                        <p class="card-text reason-cell">{{ repo.reason }}</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                {{ repo.stars }}★ &middot; {{ repo.primary_language or "?" }}
-                                &middot; created {{ repo.created_at }}
-                                {% if repo.confidence is not none %}&middot; confidence {{ "%.2f"|format(repo.confidence) }}{% endif %}
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <p class="text-muted">No new candidates this week.</p>
-        {% endif %}
-
-        <h2 class="mb-3 mt-5">Rising this week</h2>
-        {% if rising %}
-        <div class="row">
-            {% for repo in rising %}
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-rising mb-2">RISING (+{{ repo.star_delta }}★)</span>
-                        {% if repo.category %}<span class="badge badge-info mb-2">{{ repo.category }}</span>{% endif %}
-                        <h5 class="card-title"><a href="{{ repo.url }}">{{ repo.full_name }}</a></h5>
-                        <p class="card-text">{{ repo.description }}</p>
-                        <p class="card-text reason-cell">{{ repo.reason }}</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                {{ repo.stars }}★ ({% if repo.growth_pct is not none %}+{{ repo.growth_pct }}%{% endif %})
-                                &middot; last push {{ repo.pushed_at }}
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <p class="text-muted">Nothing crossed the growth threshold this week.</p>
-        {% endif %}
-
-        <h2 class="mb-3 mt-5">Full watchlist</h2>
-        <table id="archive" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Stars</th>
-                    <th>Category</th>
-                    <th>Confidence</th>
-                    <th>Language</th>
-                    <th>First seen</th>
-                    <th>Last rising</th>
-                    <th>Description</th>
-                    <th>Reason</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for repo in archive %}
-                <tr>
-                    <td><a href="{{ repo.url }}">{{ repo.full_name }}</a></td>
-                    <td>{{ repo.stars }}</td>
-                    <td>{{ repo.category }}</td>
-                    <td>{{ "%.2f"|format(repo.confidence) if repo.confidence is not none else "" }}</td>
-                    <td>{{ repo.primary_language or "" }}</td>
-                    <td>{{ repo.first_seen }}</td>
-                    <td>{{ repo.last_rising_reported_at or "" }}</td>
-                    <td>{{ repo.description }}</td>
-                    <td class="reason-cell">{{ repo.reason }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <p class="mt-5">
-            <a data-toggle="collapse" href="#excluded" role="button" aria-expanded="false" aria-controls="excluded">
-                Show {{ summary.excluded_count }} excluded-as-noise repos (classifier audit)
-            </a>
-        </p>
-        <div class="collapse" id="excluded">
-            <table id="excludedTable" class="table table-sm table-striped table-bordered" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Stars</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for repo in excluded %}
-                    <tr>
-                        <td><a href="{{ repo.url }}">{{ repo.full_name }}</a></td>
-                        <td>{{ repo.stars }}</td>
-                        <td class="reason-cell">{{ repo.reason }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="page">
+  <header class="top">
+    <div>
+      <h1>PortMaster Candidate Scout</h1>
+      <div class="run-date">Run: {{ run_date }}</div>
     </div>
-    <script>
-        $(document).ready(function() {
-            $('#archive').DataTable({
-                colReorder: true,
-                "pageLength": 50,
-                "order": [[ 1, "desc" ]]
-            });
-            $('#excludedTable').DataTable({
-                "pageLength": 25,
-                "order": [[ 1, "desc" ]]
-            });
-        });
-    </script>
+    <button id="theme-toggle" type="button" aria-label="Toggle dark/light theme">◐</button>
+  </header>
+
+  <div class="stats">
+    <span class="stat"><strong>{{ summary.new_count }}</strong> new</span>
+    <span class="stat"><strong>{{ summary.rising_count }}</strong> rising</span>
+    <span class="stat"><strong>{{ summary.tracked_relevant_count }}</strong> tracked</span>
+    <span class="stat"><strong>{{ summary.pending_count }}</strong> awaiting classification</span>
+    <span class="stat"><strong>{{ summary.excluded_count }}</strong> excluded as noise</span>
+  </div>
+
+  <h2 class="section-title">New this week</h2>
+  {% if new %}
+  <div class="card-grid">
+    {% for repo in new %}
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        {% if repo.category %}<span class="badge badge-category">{{ repo.category }}</span>{% endif %}
+      </div>
+      <h3><a href="{{ repo.url }}">{{ repo.full_name }}</a></h3>
+      <p>{{ repo.description }}</p>
+      {% if repo.reason %}<p class="reason">{{ repo.reason }}</p>{% endif %}
+      <p class="meta">
+        {{ repo.stars }}★ · {{ repo.primary_language or "?" }} · created {{ repo.created_at }}
+        {% if repo.confidence is not none %} · confidence {{ "%.2f"|format(repo.confidence) }}{% endif %}
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-note">No new candidates this week.</p>
+  {% endif %}
+
+  <h2 class="section-title">Rising this week</h2>
+  {% if rising %}
+  <div class="card-grid">
+    {% for repo in rising %}
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-rising">RISING (+{{ repo.star_delta }}★)</span>
+        {% if repo.category %}<span class="badge badge-category">{{ repo.category }}</span>{% endif %}
+      </div>
+      <h3><a href="{{ repo.url }}">{{ repo.full_name }}</a></h3>
+      <p>{{ repo.description }}</p>
+      {% if repo.reason %}<p class="reason">{{ repo.reason }}</p>{% endif %}
+      <p class="meta">
+        {{ repo.stars }}★{% if repo.growth_pct is not none %} (+{{ repo.growth_pct }}%){% endif %}
+        · last push {{ repo.pushed_at }}
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty-note">Nothing crossed the growth threshold this week.</p>
+  {% endif %}
+
+  <h2 class="section-title">Full watchlist</h2>
+  <input id="search-box" type="search" placeholder="Filter by name, category, language, description…">
+  <div class="table-wrap">
+    <table class="archive" id="archive-table">
+      <thead>
+        <tr>
+          <th data-type="text">Name</th>
+          <th data-type="num">Stars</th>
+          <th data-type="text">Category</th>
+          <th data-type="num">Confidence</th>
+          <th data-type="text">Language</th>
+          <th data-type="text">First seen</th>
+          <th data-type="text">Last rising</th>
+          <th data-type="text">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for repo in archive %}
+        <tr>
+          <td data-label="Name"><a href="{{ repo.url }}">{{ repo.full_name }}</a></td>
+          <td data-label="Stars">{{ repo.stars }}</td>
+          <td data-label="Category">{{ repo.category }}</td>
+          <td data-label="Confidence">{{ "%.2f"|format(repo.confidence) if repo.confidence is not none else "" }}</td>
+          <td data-label="Language">{{ repo.primary_language or "" }}</td>
+          <td data-label="First seen">{{ repo.first_seen }}</td>
+          <td data-label="Last rising">{{ repo.last_rising_reported_at or "" }}</td>
+          <td data-label="Description" class="muted-cell">{{ repo.description }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <details class="excluded">
+    <summary>Show {{ summary.excluded_count }} excluded-as-noise repos (classifier audit)</summary>
+    <div class="table-wrap">
+      <table class="archive">
+        <thead>
+          <tr><th>Name</th><th>Stars</th><th>Reason</th></tr>
+        </thead>
+        <tbody>
+          {% for repo in excluded %}
+          <tr>
+            <td data-label="Name"><a href="{{ repo.url }}">{{ repo.full_name }}</a></td>
+            <td data-label="Stars">{{ repo.stars }}</td>
+            <td data-label="Reason" class="muted-cell">{{ repo.reason }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <footer class="page-footer">Generated by gh_trending_reports</footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.getElementById('theme-toggle');
+  var stored = localStorage.getItem('theme');
+  if (stored) root.setAttribute('data-theme', stored);
+
+  toggle.addEventListener('click', function () {
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var current = root.getAttribute('data-theme') || (prefersDark ? 'dark' : 'light');
+    var next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+})();
+
+(function () {
+  var searchBox = document.getElementById('search-box');
+  var table = document.getElementById('archive-table');
+  if (!table) return;
+  var tbody = table.tBodies[0];
+  var rows = Array.prototype.slice.call(tbody.rows);
+
+  searchBox.addEventListener('input', function () {
+    var term = searchBox.value.trim().toLowerCase();
+    rows.forEach(function (row) {
+      row.style.display = row.textContent.toLowerCase().indexOf(term) === -1 ? 'none' : '';
+    });
+  });
+
+  var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+  var sortState = { col: null, dir: 1 };
+  headers.forEach(function (th, colIndex) {
+    th.addEventListener('click', function () {
+      var type = th.getAttribute('data-type') || 'text';
+      sortState.dir = sortState.col === colIndex ? -sortState.dir : -1;
+      sortState.col = colIndex;
+
+      var sorted = rows.slice().sort(function (a, b) {
+        var av = a.cells[colIndex].textContent.trim();
+        var bv = b.cells[colIndex].textContent.trim();
+        if (type === 'num') {
+          av = parseFloat(av) || 0;
+          bv = parseFloat(bv) || 0;
+          return (av - bv) * sortState.dir;
+        }
+        return av.localeCompare(bv) * sortState.dir;
+      });
+      sorted.forEach(function (row) { tbody.appendChild(row); });
+      rows = sorted;
+    });
+  });
+})();
+</script>
 </body>
 </html>
