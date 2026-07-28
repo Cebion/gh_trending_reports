@@ -43,12 +43,26 @@ def main():
     for record in new_records:
         state_mod.upsert_repo(watchlist, record["id"], record)
 
-    print("[run] classifying new candidates...")
-    classify.classify_new_repos(gemini_api_key, client, new_records)
+    # Repos left "pending" by a previous run (classifier outage, bad model
+    # name, etc) must be retried every run -- otherwise a transient failure
+    # permanently strands them, since discovery never re-returns an
+    # already-tracked repo as "new".
+    still_pending = state_mod.pending_records(watchlist, exclude_ids=new_ids)
+    if still_pending:
+        print(f"[run] retrying {len(still_pending)} previously-pending classifications...")
+
+    to_classify = new_records + still_pending
+    classify_ids = {str(r["id"]) for r in to_classify}
+
+    print(f"[run] classifying {len(to_classify)} candidates...")
+    classify.classify_new_repos(gemini_api_key, client, to_classify)
 
     print("[run] computing new/rising surfacing...")
-    promotion.mark_new_surfaced(watchlist, new_ids, today_str)
-    promoted = promotion.compute_promotions(watchlist, new_ids, today_str)
+    # classify_ids (not just new_ids) get the "New this week" treatment: a
+    # repo resolved from pending is appearing in the visible report for the
+    # first time just now, even though it was originally discovered earlier.
+    promotion.mark_new_surfaced(watchlist, classify_ids, today_str)
+    promoted = promotion.compute_promotions(watchlist, classify_ids, today_str)
     print(f"[run] promoted {len(promoted)} repos to 'Rising'")
 
     watchlist["last_run"] = now_iso
