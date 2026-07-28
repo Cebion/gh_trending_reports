@@ -1,645 +1,823 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>PortMaster Candidate Scout</title>
-    <link href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/colreorder/1.5.3/css/colReorder.dataTables.min.css" rel="stylesheet">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/colreorder/1.5.3/js/dataTables.colReorder.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
-    <style>
-        .badge-new { background-color: #28a745; color: #fff; }
-        .badge-rising { background-color: #fd7e14; color: #fff; }
-        .reason-cell { max-width: 320px; font-size: 0.9em; color: #555; }
-        .card-repo { margin-bottom: 1rem; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PortMaster Candidate Scout</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --bg-elevated: #ffffff;
+    --text: #1a1d23;
+    --text-muted: #5b6270;
+    --border: #e1e4e9;
+    --accent: #2563eb;
+    --accent-soft: #eaf1ff;
+    --new: #1a9c56;
+    --new-soft: #e4f7ec;
+    --rising: #c2600a;
+    --rising-soft: #fdf0e0;
+    --shadow: 0 1px 2px rgba(20, 20, 30, 0.06), 0 1px 8px rgba(20, 20, 30, 0.05);
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161a;
+    --bg-elevated: #1d2026;
+    --text: #e7e9ee;
+    --text-muted: #97a0b0;
+    --border: #2c3038;
+    --accent: #6ea2ff;
+    --accent-soft: #1c2c4a;
+    --new: #4fd484;
+    --new-soft: #10301f;
+    --rising: #f2a24d;
+    --rising-soft: #3a2712;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 8px rgba(0, 0, 0, 0.25);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14161a;
+      --bg-elevated: #1d2026;
+      --text: #e7e9ee;
+      --text-muted: #97a0b0;
+      --border: #2c3038;
+      --accent: #6ea2ff;
+      --accent-soft: #1c2c4a;
+      --new: #4fd484;
+      --new-soft: #10301f;
+      --rising: #f2a24d;
+      --rising-soft: #3a2712;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 8px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 4rem;
+  }
+
+  header.top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  header.top h1 { font-size: 1.5rem; margin: 0 0 0.15rem; }
+  header.top .run-date { color: var(--text-muted); font-size: 0.9rem; }
+
+  #theme-toggle {
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 0.45rem 0.7rem;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    flex: none;
+  }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .stat {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    box-shadow: var(--shadow);
+  }
+  .stat strong { color: var(--text); }
+
+  h2.section-title {
+    font-size: 1.15rem;
+    margin: 2.25rem 0 0.9rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .empty-note { color: var(--text-muted); font-size: 0.9rem; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.9rem;
+  }
+  .card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .card .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  .badge-new { background: var(--new-soft); color: var(--new); }
+  .badge-rising { background: var(--rising-soft); color: var(--rising); }
+  .badge-category { background: var(--accent-soft); color: var(--accent); }
+  .card h3 { margin: 0; font-size: 1rem; }
+  .card h3 a { color: var(--text); }
+  .card p { margin: 0; font-size: 0.9rem; }
+  .card .reason { color: var(--text-muted); font-style: italic; }
+  .card .meta { color: var(--text-muted); font-size: 0.8rem; }
+
+  .table-wrap {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  #search-box {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  table.archive {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    min-width: 720px;
+  }
+  table.archive th, table.archive td {
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.archive th {
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  table.archive th:hover { color: var(--text); }
+  table.archive tbody tr:hover { background: var(--accent-soft); }
+  .muted-cell { color: var(--text-muted); }
+
+  details.excluded { margin-top: 2rem; }
+  details.excluded summary {
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    padding: 0.5rem 0;
+  }
+  details.excluded .table-wrap { margin-top: 0.75rem; }
+
+  footer.page-footer {
+    margin-top: 3rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 1rem 0.75rem 3rem; }
+    header.top h1 { font-size: 1.25rem; }
+    table.archive { min-width: 0; }
+    table.archive thead { display: none; }
+    table.archive tr {
+      display: block;
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 0.75rem;
+    }
+    table.archive td {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-bottom: none;
+      padding: 0.25rem 0;
+    }
+    table.archive td::before {
+      content: attr(data-label);
+      color: var(--text-muted);
+      font-weight: 600;
+      flex: none;
+      margin-right: 0.75rem;
+    }
+  }
+</style>
 </head>
 <body>
-    <div class="container py-5">
-        <h1 class="mb-2">PortMaster Candidate Scout</h1>
-        <p class="text-muted">Run: 2026-07-28</p>
-
-        <div class="row mb-4">
-            <div class="col">
-                <span class="badge badge-secondary mr-2">10 new</span>
-                <span class="badge badge-secondary mr-2">0 rising</span>
-                <span class="badge badge-secondary mr-2">10 tracked</span>
-                <span class="badge badge-secondary mr-2">1080 awaiting classification</span>
-                <span class="badge badge-secondary">39 excluded as noise</span>
-            </div>
-        </div>
-
-        <h2 class="mb-3">New this week</h2>
-        
-        <div class="row">
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">emulator</span>
-                        <h5 class="card-title"><a href="https://github.com/VuqarAhadli/DiamondRushEmulator">VuqarAhadli/DiamondRushEmulator</a></h5>
-                        <p class="card-text">A custom Java Virtual Machine (JVM) implementation for reverse engineering the iconic J2ME game Diamond Rush.</p>
-                        <p class="card-text reason-cell">Custom JVM implementation targeting a classic J2ME game, with plans to port to microcontrollers and embedded platforms.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                1★ &middot; C++
-                                &middot; created 2026-07-23T14:03:47Z
-                                &middot; confidence 0.90
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">emulator</span>
-                        <h5 class="card-title"><a href="https://github.com/keithadler/openmk">keithadler/openmk</a></h5>
-                        <p class="card-text">A browser-based Rhodes MK-80 / Roland MKS-20 electric piano. Runs the rdpiano silicon-level SA-synthesis emulator compiled to WebAssembly in an AudioWorklet. All 16 patches, MIDI in, no installs.</p>
-                        <p class="card-text reason-cell">Browser-based silicon-level hardware synth/emulator for the Rhodes MK-80 and Roland MKS-20.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; C++
-                                &middot; created 2026-07-27T04:41:59Z
-                                &middot; confidence 0.90
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">emulator</span>
-                        <h5 class="card-title"><a href="https://github.com/mova77/meta-amiga-emulator">mova77/meta-amiga-emulator</a></h5>
-                        <p class="card-text">Portable, cycle-accurate Commodore Amiga emulator for macOS, Linux and Windows. C++23, GPL-3.0-or-later, clean-room. Games, Workbench and demoscene at measured compatibility.</p>
-                        <p class="card-text reason-cell">Portable, cycle-accurate Commodore Amiga emulator written in C++23.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; CMake
-                                &middot; created 2026-07-27T16:45:07Z
-                                &middot; confidence 0.95
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">sdl_port</span>
-                        <h5 class="card-title"><a href="https://github.com/AbdullahTrees/akuji-re">AbdullahTrees/akuji-re</a></h5>
-                        <p class="card-text"></p>
-                        <p class="card-text reason-cell">Active reverse engineering and SDL2 port project for the 2D action-platformer Akuji the Demon.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; ?
-                                &middot; created 2026-07-28T02:23:16Z
-                                &middot; confidence 0.98
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">sdl_port</span>
-                        <h5 class="card-title"><a href="https://github.com/woiceatus/herozerorm">woiceatus/herozerorm</a></h5>
-                        <p class="card-text"></p>
-                        <p class="card-text reason-cell">Web/Canvas port of a J2ME RPG game with customized runtime shims, which could be adapted or referenced for embedded device ports.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; JavaScript
-                                &middot; created 2026-07-28T05:17:32Z
-                                &middot; confidence 0.85
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">reverse_engineering</span>
-                        <h5 class="card-title"><a href="https://github.com/qarl/arcade-js">qarl/arcade-js</a></h5>
-                        <p class="card-text">Arcade games translated from their original machine code to JavaScript, validated pixel-exact against MAME. An experiment in using AI agents to port existing software.</p>
-                        <p class="card-text reason-cell">Machine code translation and pixel-exact arcade game reimplementation project in JavaScript, interesting for reverse engineering reference.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; JavaScript
-                                &middot; created 2026-07-22T18:16:19Z
-                                &middot; confidence 0.80
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">decompilation</span>
-                        <h5 class="card-title"><a href="https://github.com/SomeMMM/JFG-Vibe-Heap">SomeMMM/JFG-Vibe-Heap</a></h5>
-                        <p class="card-text">Vibe coded repo for n64 research.</p>
-                        <p class="card-text reason-cell">Research notes, tooling, and reverse-engineering findings for the N64 game Jet Force Gemini, relevant to the retro emulation and decompilation community.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; C++
-                                &middot; created 2026-07-27T23:47:32Z
-                                &middot; confidence 0.90
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">decompilation</span>
-                        <h5 class="card-title"><a href="https://github.com/EstebanPdN/zelda-alttp-3ds">EstebanPdN/zelda-alttp-3ds</a></h5>
-                        <p class="card-text">Nintendo 3DS dual-screen port of Zelda A Link to the Past based on zelda3</p>
-                        <p class="card-text reason-cell">Nintendo 3DS port of the Zelda3 reverse-engineered engine, highly relevant for handheld porting concepts.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; C
-                                &middot; created 2026-07-27T22:06:01Z
-                                &middot; confidence 0.90
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">emulator</span>
-                        <h5 class="card-title"><a href="https://github.com/MarkrPearce96/Genesis-Plus-GX">MarkrPearce96/Genesis-Plus-GX</a></h5>
-                        <p class="card-text">Stock mirror of libretro/Genesis-Plus-GX + RetroNest universal macOS CI release workflow (zero source patches)</p>
-                        <p class="card-text reason-cell">Stock mirror of Genesis Plus GX, a foundational multi-console emulator core frequently used in retro handhelds.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; C
-                                &middot; created 2026-07-28T04:16:29Z
-                                &middot; confidence 0.95
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6 card-repo">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <span class="badge badge-new mb-2">NEW</span>
-                        <span class="badge badge-info mb-2">emulator</span>
-                        <h5 class="card-title"><a href="https://github.com/EmiiBytee/np2kai-ps4">EmiiBytee/np2kai-ps4</a></h5>
-                        <p class="card-text"></p>
-                        <p class="card-text reason-cell">PC-98 emulator port (NP2kai), representing retro emulation software.</p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                0★ &middot; C++
-                                &middot; created 2026-07-28T04:35:35Z
-                                &middot; confidence 0.90
-                            </small>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-        
-
-        <h2 class="mb-3 mt-5">Rising this week</h2>
-        
-        <p class="text-muted">Nothing crossed the growth threshold this week.</p>
-        
-
-        <h2 class="mb-3 mt-5">Full watchlist</h2>
-        <table id="archive" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Stars</th>
-                    <th>Category</th>
-                    <th>Confidence</th>
-                    <th>Language</th>
-                    <th>First seen</th>
-                    <th>Last rising</th>
-                    <th>Description</th>
-                    <th>Reason</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-                <tr>
-                    <td><a href="https://github.com/VuqarAhadli/DiamondRushEmulator">VuqarAhadli/DiamondRushEmulator</a></td>
-                    <td>1</td>
-                    <td>emulator</td>
-                    <td>0.90</td>
-                    <td>C++</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td>A custom Java Virtual Machine (JVM) implementation for reverse engineering the iconic J2ME game Diamond Rush.</td>
-                    <td class="reason-cell">Custom JVM implementation targeting a classic J2ME game, with plans to port to microcontrollers and embedded platforms.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/keithadler/openmk">keithadler/openmk</a></td>
-                    <td>0</td>
-                    <td>emulator</td>
-                    <td>0.90</td>
-                    <td>C++</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td>A browser-based Rhodes MK-80 / Roland MKS-20 electric piano. Runs the rdpiano silicon-level SA-synthesis emulator compiled to WebAssembly in an AudioWorklet. All 16 patches, MIDI in, no installs.</td>
-                    <td class="reason-cell">Browser-based silicon-level hardware synth/emulator for the Rhodes MK-80 and Roland MKS-20.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/mova77/meta-amiga-emulator">mova77/meta-amiga-emulator</a></td>
-                    <td>0</td>
-                    <td>emulator</td>
-                    <td>0.95</td>
-                    <td>CMake</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td>Portable, cycle-accurate Commodore Amiga emulator for macOS, Linux and Windows. C++23, GPL-3.0-or-later, clean-room. Games, Workbench and demoscene at measured compatibility.</td>
-                    <td class="reason-cell">Portable, cycle-accurate Commodore Amiga emulator written in C++23.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/AbdullahTrees/akuji-re">AbdullahTrees/akuji-re</a></td>
-                    <td>0</td>
-                    <td>sdl_port</td>
-                    <td>0.98</td>
-                    <td></td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td></td>
-                    <td class="reason-cell">Active reverse engineering and SDL2 port project for the 2D action-platformer Akuji the Demon.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/woiceatus/herozerorm">woiceatus/herozerorm</a></td>
-                    <td>0</td>
-                    <td>sdl_port</td>
-                    <td>0.85</td>
-                    <td>JavaScript</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td></td>
-                    <td class="reason-cell">Web/Canvas port of a J2ME RPG game with customized runtime shims, which could be adapted or referenced for embedded device ports.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/qarl/arcade-js">qarl/arcade-js</a></td>
-                    <td>0</td>
-                    <td>reverse_engineering</td>
-                    <td>0.80</td>
-                    <td>JavaScript</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td>Arcade games translated from their original machine code to JavaScript, validated pixel-exact against MAME. An experiment in using AI agents to port existing software.</td>
-                    <td class="reason-cell">Machine code translation and pixel-exact arcade game reimplementation project in JavaScript, interesting for reverse engineering reference.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/SomeMMM/JFG-Vibe-Heap">SomeMMM/JFG-Vibe-Heap</a></td>
-                    <td>0</td>
-                    <td>decompilation</td>
-                    <td>0.90</td>
-                    <td>C++</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td>Vibe coded repo for n64 research.</td>
-                    <td class="reason-cell">Research notes, tooling, and reverse-engineering findings for the N64 game Jet Force Gemini, relevant to the retro emulation and decompilation community.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/EstebanPdN/zelda-alttp-3ds">EstebanPdN/zelda-alttp-3ds</a></td>
-                    <td>0</td>
-                    <td>decompilation</td>
-                    <td>0.90</td>
-                    <td>C</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td>Nintendo 3DS dual-screen port of Zelda A Link to the Past based on zelda3</td>
-                    <td class="reason-cell">Nintendo 3DS port of the Zelda3 reverse-engineered engine, highly relevant for handheld porting concepts.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/MarkrPearce96/Genesis-Plus-GX">MarkrPearce96/Genesis-Plus-GX</a></td>
-                    <td>0</td>
-                    <td>emulator</td>
-                    <td>0.95</td>
-                    <td>C</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td>Stock mirror of libretro/Genesis-Plus-GX + RetroNest universal macOS CI release workflow (zero source patches)</td>
-                    <td class="reason-cell">Stock mirror of Genesis Plus GX, a foundational multi-console emulator core frequently used in retro handhelds.</td>
-                </tr>
-                
-                <tr>
-                    <td><a href="https://github.com/EmiiBytee/np2kai-ps4">EmiiBytee/np2kai-ps4</a></td>
-                    <td>0</td>
-                    <td>emulator</td>
-                    <td>0.90</td>
-                    <td>C++</td>
-                    <td>2026-07-28T06:19:49.846533+00:00</td>
-                    <td></td>
-                    <td></td>
-                    <td class="reason-cell">PC-98 emulator port (NP2kai), representing retro emulation software.</td>
-                </tr>
-                
-            </tbody>
-        </table>
-
-        <p class="mt-5">
-            <a data-toggle="collapse" href="#excluded" role="button" aria-expanded="false" aria-controls="excluded">
-                Show 39 excluded-as-noise repos (classifier audit)
-            </a>
-        </p>
-        <div class="collapse" id="excluded">
-            <table id="excludedTable" class="table table-sm table-striped table-bordered" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Stars</th>
-                        <th>Reason</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    <tr>
-                        <td><a href="https://github.com/fission-systems/Fission">fission-systems/Fission</a></td>
-                        <td>2</td>
-                        <td class="reason-cell">Binary analysis and decompilation workspace, not a target game or port for retro handhelds.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/drewmerc302/valeton-gp50">drewmerc302/valeton-gp50</a></td>
-                        <td>2</td>
-                        <td class="reason-cell">Browser-based preset editor for a guitar multi-effects pedal, unrelated to video games or emulators.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/thiagolegrand/FX30-Controller">thiagolegrand/FX30-Controller</a></td>
-                        <td>1</td>
-                        <td class="reason-cell">Hardware controller application for a Sony cinema camera.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/brendangooden/j2208-band-tools">brendangooden/j2208-band-tools</a></td>
-                        <td>1</td>
-                        <td class="reason-cell">Raw BLE client and protocol documentation for fitness tracker wristbands.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/talontownsend/fh6-traction-control">talontownsend/fh6-traction-control</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Real-time traction control helper utility running on Windows for a modern racing game.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/cocacola-dev/onlyfans-reverse">cocacola-dev/onlyfans-reverse</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">API request-signing extractor and scraper tool for a social media website.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/IDioniksI/reverse-engineering-coursework">IDioniksI/reverse-engineering-coursework</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">University coursework focusing on malware analysis and general cybersecurity deobfuscation.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/LobsterEnergize/dead-by-daylight-enhancer">LobsterEnergize/dead-by-daylight-enhancer</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Cheat, exploit or trainer utility for a modern PC game.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/Arenatergrasp/dll-loader-utility">Arenatergrasp/dll-loader-utility</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Windows DLL injection utility for security and modding research.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/PartNautilus/manual-map-mod-tool">PartNautilus/manual-map-mod-tool</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Windows manual mapping DLL injector tool.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/LucasSKrewer/kenshi-modkit">LucasSKrewer/kenshi-modkit</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Modding toolkit and file parser for the PC game Kenshi, not an engine port or emulator.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/ejouanchicot/ffxi-macro-editor">ejouanchicot/ffxi-macro-editor</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Utility/editor for Final Fantasy XI macros, not an open-source game or port relevant to PortMaster.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/ryan-sharpnack/systems-offensive-engineering">ryan-sharpnack/systems-offensive-engineering</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Personal portfolio repository for low-level systems and security engineering roadmaps.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/ericboehs/aosmith-water-heater">ericboehs/aosmith-water-heater</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Home automation and monitoring tool for a water heater via RS-485 and MQTT.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/JMarchiori13/wacatac-detection-analysis">JMarchiori13/wacatac-detection-analysis</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Security analysis documentation concerning Microsoft Defender's Wacatac detection.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/mhadifilms/serializd-exporter">mhadifilms/serializd-exporter</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Python tool to export user data from the Serializd TV tracking website.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/SnatchTrailAqueduct/engine-mod-manager">SnatchTrailAqueduct/engine-mod-manager</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Helper utility for managing Cheat Engine tables and PC game mods on Windows.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/KanadeK/savedelta">KanadeK/savedelta</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">CLI binary diff and file analysis tool for finding where app/save states are changed, but not a game or emulator itself.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/Caua726/caustic-media">Caua726/caustic-media</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Custom game engine media layer (windowing, input, graphics, audio) currently in design/pre-implementation phase.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/kundlatsch/bge">kundlatsch/bge</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Custom 2D/3D Python-based AI-first game engine, not a specific port candidate or retro game.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/PhuVinhAI/ModTS4">PhuVinhAI/ModTS4</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Workspace tool for managing The Sims 4 mods and script decompilation, completely unrelated to retro handheld game engines or emulators.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/TBMonkey/FFBE_Decompile">TBMonkey/FFBE_Decompile</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Personal partial decompile/dump files for a mobile gacha game (Final Fantasy Brave Exvius), not a complete game port or engine reimplementation.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/SquareDealSam/EndExpanded">SquareDealSam/EndExpanded</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Minecraft mod (Fabric), irrelevant to PortMaster which targets standalone games, ports, and console emulators.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/paautyp-dev/farm">paautyp-dev/farm</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Roblox script asset/decompiled snippet, not an open source game project or port.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/codahq/pearlmod-disc-golf">codahq/pearlmod-disc-golf</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Minecraft mod (NeoForge), irrelevant to PortMaster.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/semnavmeleon/BedWarsRUST">semnavmeleon/BedWarsRUST</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Server-side plugin for Rust (the multiplayer PC survival game), irrelevant to standalone handheld ports.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/ahicks92/soundz">ahicks92/soundz</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Accessibility mod for Shapez 2 on PC, not relevant to retro handheld console gaming or ports.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/S-moreo/individuality">S-moreo/individuality</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Minecraft village overhaul mod, irrelevant to PortMaster.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/pompomroma/Wadle">pompomroma/Wadle</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">AI coding web application framework, not a game project.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/monterto/purper-web">monterto/purper-web</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Web-based JavaScript port of a small GameMaker tech demo, not suitable for PortMaster handhelds.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/saadkhairullah/Portfolio">saadkhairullah/Portfolio</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Personal developer portfolio repository.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/chris13work/Cat-War">chris13work/Cat-War</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">HTML5 Canvas browser/mobile game wrapper, not an SDL/native game port suitable for PortMaster.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/Windy4/ChoicerVoicerAutoPack">Windy4/ChoicerVoicerAutoPack</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Modding and content pack automator tool for a specific browser/web game.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/lanecrowsheave/war-thunder-overlay-assistant">lanecrowsheave/war-thunder-overlay-assistant</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Desktop overlay utility/cheat tool for War Thunder.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/jcscocca/palmatch">jcscocca/palmatch</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Web-based Palworld breeding calculator utility.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/KanadeK/savecompat">KanadeK/savecompat</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Engine-agnostic save migration testing library and CLI.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/Craterespindle23/process-config-editor">Craterespindle23/process-config-editor</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Windows systems utility and process manager.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/MarketLou502/Computer">MarketLou502/Computer</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">Personal smart display dashboard configuration.</td>
-                    </tr>
-                    
-                    <tr>
-                        <td><a href="https://github.com/fabiangonzalezdev/Mimo-FE">fabiangonzalezdev/Mimo-FE</a></td>
-                        <td>0</td>
-                        <td class="reason-cell">This repository is a desktop game library frontend and launcher built with React, Tauri, and Rust. It is not an open source game, emulator, or engine port suitable for PortMaster, but rather a frontend application itself.</td>
-                    </tr>
-                    
-                </tbody>
-            </table>
-        </div>
+<div class="page">
+  <header class="top">
+    <div>
+      <h1>PortMaster Candidate Scout</h1>
+      <div class="run-date">Run: 2026-07-28</div>
     </div>
-    <script>
-        $(document).ready(function() {
-            $('#archive').DataTable({
-                colReorder: true,
-                "pageLength": 50,
-                "order": [[ 1, "desc" ]]
-            });
-            $('#excludedTable').DataTable({
-                "pageLength": 25,
-                "order": [[ 1, "desc" ]]
-            });
-        });
-    </script>
+    <button id="theme-toggle" type="button" aria-label="Toggle dark/light theme">◐</button>
+  </header>
+
+  <div class="stats">
+    <span class="stat"><strong>10</strong> new</span>
+    <span class="stat"><strong>0</strong> rising</span>
+    <span class="stat"><strong>5</strong> tracked</span>
+    <span class="stat"><strong>1080</strong> awaiting classification</span>
+    <span class="stat"><strong>45</strong> excluded as noise</span>
+  </div>
+
+  <h2 class="section-title">New this week</h2>
+  
+  <div class="card-grid">
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">emulator</span>
+      </div>
+      <h3><a href="https://github.com/VuqarAhadli/DiamondRushEmulator">VuqarAhadli/DiamondRushEmulator</a></h3>
+      <p>A custom Java Virtual Machine (JVM) implementation for reverse engineering the iconic J2ME game Diamond Rush.</p>
+      <p class="reason">Custom JVM implementation targeting a classic J2ME game, with plans to port to microcontrollers and embedded platforms.</p>
+      <p class="meta">
+        1★ · C++ · created 2026-07-23T14:03:47Z
+         · confidence 0.90
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">reverse_engineering</span>
+      </div>
+      <h3><a href="https://github.com/qarl/arcade-js">qarl/arcade-js</a></h3>
+      <p>Arcade games translated from their original machine code to JavaScript, validated pixel-exact against MAME. An experiment in using AI agents to port existing software.</p>
+      <p class="reason">Machine code translation and pixel-exact arcade game reimplementation project in JavaScript, interesting for reverse engineering reference.</p>
+      <p class="meta">
+        0★ · JavaScript · created 2026-07-22T18:16:19Z
+         · confidence 0.80
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">emulator</span>
+      </div>
+      <h3><a href="https://github.com/keithadler/openmk">keithadler/openmk</a></h3>
+      <p>A browser-based Rhodes MK-80 / Roland MKS-20 electric piano. Runs the rdpiano silicon-level SA-synthesis emulator compiled to WebAssembly in an AudioWorklet. All 16 patches, MIDI in, no installs.</p>
+      <p class="reason">Browser-based silicon-level hardware synth/emulator for the Rhodes MK-80 and Roland MKS-20.</p>
+      <p class="meta">
+        0★ · C++ · created 2026-07-27T04:41:59Z
+         · confidence 0.90
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">emulator</span>
+      </div>
+      <h3><a href="https://github.com/mova77/meta-amiga-emulator">mova77/meta-amiga-emulator</a></h3>
+      <p>Portable, cycle-accurate Commodore Amiga emulator for macOS, Linux and Windows. C++23, GPL-3.0-or-later, clean-room. Games, Workbench and demoscene at measured compatibility.</p>
+      <p class="reason">Portable, cycle-accurate Commodore Amiga emulator written in C++23.</p>
+      <p class="meta">
+        0★ · CMake · created 2026-07-27T16:45:07Z
+         · confidence 0.95
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">decompilation</span>
+      </div>
+      <h3><a href="https://github.com/EstebanPdN/zelda-alttp-3ds">EstebanPdN/zelda-alttp-3ds</a></h3>
+      <p>Nintendo 3DS dual-screen port of Zelda A Link to the Past based on zelda3</p>
+      <p class="reason">Nintendo 3DS port of the Zelda3 reverse-engineered engine, highly relevant for handheld porting concepts.</p>
+      <p class="meta">
+        0★ · C · created 2026-07-27T22:06:01Z
+         · confidence 0.90
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">decompilation</span>
+      </div>
+      <h3><a href="https://github.com/SomeMMM/JFG-Vibe-Heap">SomeMMM/JFG-Vibe-Heap</a></h3>
+      <p>Vibe coded repo for n64 research.</p>
+      <p class="reason">Research notes, tooling, and reverse-engineering findings for the N64 game Jet Force Gemini, relevant to the retro emulation and decompilation community.</p>
+      <p class="meta">
+        0★ · C++ · created 2026-07-27T23:47:32Z
+         · confidence 0.90
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">sdl_port</span>
+      </div>
+      <h3><a href="https://github.com/AbdullahTrees/akuji-re">AbdullahTrees/akuji-re</a></h3>
+      <p></p>
+      <p class="reason">Active reverse engineering and SDL2 port project for the 2D action-platformer Akuji the Demon.</p>
+      <p class="meta">
+        0★ · ? · created 2026-07-28T02:23:16Z
+         · confidence 0.98
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">emulator</span>
+      </div>
+      <h3><a href="https://github.com/MarkrPearce96/Genesis-Plus-GX">MarkrPearce96/Genesis-Plus-GX</a></h3>
+      <p>Stock mirror of libretro/Genesis-Plus-GX + RetroNest universal macOS CI release workflow (zero source patches)</p>
+      <p class="reason">Stock mirror of Genesis Plus GX, a foundational multi-console emulator core frequently used in retro handhelds.</p>
+      <p class="meta">
+        0★ · C · created 2026-07-28T04:16:29Z
+         · confidence 0.95
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">emulator</span>
+      </div>
+      <h3><a href="https://github.com/EmiiBytee/np2kai-ps4">EmiiBytee/np2kai-ps4</a></h3>
+      <p></p>
+      <p class="reason">PC-98 emulator port (NP2kai), representing retro emulation software.</p>
+      <p class="meta">
+        0★ · C++ · created 2026-07-28T04:35:35Z
+         · confidence 0.90
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="badges">
+        <span class="badge badge-new">NEW</span>
+        <span class="badge badge-category">sdl_port</span>
+      </div>
+      <h3><a href="https://github.com/woiceatus/herozerorm">woiceatus/herozerorm</a></h3>
+      <p></p>
+      <p class="reason">Web/Canvas port of a J2ME RPG game with customized runtime shims, which could be adapted or referenced for embedded device ports.</p>
+      <p class="meta">
+        0★ · JavaScript · created 2026-07-28T05:17:32Z
+         · confidence 0.85
+      </p>
+    </div>
+    
+  </div>
+  
+
+  <h2 class="section-title">Rising this week</h2>
+  
+  <p class="empty-note">Nothing crossed the growth threshold this week.</p>
+  
+
+  <h2 class="section-title">Full watchlist</h2>
+  <input id="search-box" type="search" placeholder="Filter by name, category, language, description…">
+  <div class="table-wrap">
+    <table class="archive" id="archive-table">
+      <thead>
+        <tr>
+          <th data-type="text">Name</th>
+          <th data-type="num">Stars</th>
+          <th data-type="text">Category</th>
+          <th data-type="num">Confidence</th>
+          <th data-type="text">Language</th>
+          <th data-type="text">First seen</th>
+          <th data-type="text">Last rising</th>
+          <th data-type="text">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td data-label="Name"><a href="https://github.com/qarl/arcade-js">qarl/arcade-js</a></td>
+          <td data-label="Stars">0</td>
+          <td data-label="Category">reverse_engineering</td>
+          <td data-label="Confidence">0.80</td>
+          <td data-label="Language">JavaScript</td>
+          <td data-label="First seen">2026-07-28T06:19:49.846533+00:00</td>
+          <td data-label="Last rising"></td>
+          <td data-label="Description" class="muted-cell">Arcade games translated from their original machine code to JavaScript, validated pixel-exact against MAME. An experiment in using AI agents to port existing software.</td>
+        </tr>
+        
+        <tr>
+          <td data-label="Name"><a href="https://github.com/EstebanPdN/zelda-alttp-3ds">EstebanPdN/zelda-alttp-3ds</a></td>
+          <td data-label="Stars">0</td>
+          <td data-label="Category">decompilation</td>
+          <td data-label="Confidence">0.90</td>
+          <td data-label="Language">C</td>
+          <td data-label="First seen">2026-07-28T06:19:49.846533+00:00</td>
+          <td data-label="Last rising"></td>
+          <td data-label="Description" class="muted-cell">Nintendo 3DS dual-screen port of Zelda A Link to the Past based on zelda3</td>
+        </tr>
+        
+        <tr>
+          <td data-label="Name"><a href="https://github.com/SomeMMM/JFG-Vibe-Heap">SomeMMM/JFG-Vibe-Heap</a></td>
+          <td data-label="Stars">0</td>
+          <td data-label="Category">decompilation</td>
+          <td data-label="Confidence">0.90</td>
+          <td data-label="Language">C++</td>
+          <td data-label="First seen">2026-07-28T06:19:49.846533+00:00</td>
+          <td data-label="Last rising"></td>
+          <td data-label="Description" class="muted-cell">Vibe coded repo for n64 research.</td>
+        </tr>
+        
+        <tr>
+          <td data-label="Name"><a href="https://github.com/AbdullahTrees/akuji-re">AbdullahTrees/akuji-re</a></td>
+          <td data-label="Stars">0</td>
+          <td data-label="Category">sdl_port</td>
+          <td data-label="Confidence">0.98</td>
+          <td data-label="Language"></td>
+          <td data-label="First seen">2026-07-28T06:19:49.846533+00:00</td>
+          <td data-label="Last rising"></td>
+          <td data-label="Description" class="muted-cell"></td>
+        </tr>
+        
+        <tr>
+          <td data-label="Name"><a href="https://github.com/woiceatus/herozerorm">woiceatus/herozerorm</a></td>
+          <td data-label="Stars">0</td>
+          <td data-label="Category">sdl_port</td>
+          <td data-label="Confidence">0.85</td>
+          <td data-label="Language">JavaScript</td>
+          <td data-label="First seen">2026-07-28T06:19:49.846533+00:00</td>
+          <td data-label="Last rising"></td>
+          <td data-label="Description" class="muted-cell"></td>
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+
+  <details class="excluded">
+    <summary>Show 45 excluded-as-noise repos (classifier audit)</summary>
+    <div class="table-wrap">
+      <table class="archive">
+        <thead>
+          <tr><th>Name</th><th>Stars</th><th>Reason</th></tr>
+        </thead>
+        <tbody>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/drewmerc302/valeton-gp50">drewmerc302/valeton-gp50</a></td>
+            <td data-label="Stars">2</td>
+            <td data-label="Reason" class="muted-cell">Browser-based preset editor for a guitar multi-effects pedal, unrelated to video games or emulators.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/VuqarAhadli/DiamondRushEmulator">VuqarAhadli/DiamondRushEmulator</a></td>
+            <td data-label="Stars">1</td>
+            <td data-label="Reason" class="muted-cell">Excluded by category preference (emulator)</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/fission-systems/Fission">fission-systems/Fission</a></td>
+            <td data-label="Stars">2</td>
+            <td data-label="Reason" class="muted-cell">Binary analysis and decompilation workspace, not a target game or port for retro handhelds.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/Caua726/caustic-media">Caua726/caustic-media</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Custom game engine media layer (windowing, input, graphics, audio) currently in design/pre-implementation phase.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/keithadler/openmk">keithadler/openmk</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Excluded by category preference (emulator)</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/S-moreo/individuality">S-moreo/individuality</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Minecraft village overhaul mod, irrelevant to PortMaster.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/pompomroma/Wadle">pompomroma/Wadle</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">AI coding web application framework, not a game project.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/MarketLou502/Computer">MarketLou502/Computer</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Personal smart display dashboard configuration.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/jcscocca/palmatch">jcscocca/palmatch</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Web-based Palworld breeding calculator utility.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/mova77/meta-amiga-emulator">mova77/meta-amiga-emulator</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Excluded by category preference (emulator)</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/IDioniksI/reverse-engineering-coursework">IDioniksI/reverse-engineering-coursework</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">University coursework focusing on malware analysis and general cybersecurity deobfuscation.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/SquareDealSam/EndExpanded">SquareDealSam/EndExpanded</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Minecraft mod (Fabric), irrelevant to PortMaster which targets standalone games, ports, and console emulators.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/ryan-sharpnack/systems-offensive-engineering">ryan-sharpnack/systems-offensive-engineering</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Personal portfolio repository for low-level systems and security engineering roadmaps.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/TBMonkey/FFBE_Decompile">TBMonkey/FFBE_Decompile</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Personal partial decompile/dump files for a mobile gacha game (Final Fantasy Brave Exvius), not a complete game port or engine reimplementation.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/saadkhairullah/Portfolio">saadkhairullah/Portfolio</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Personal developer portfolio repository.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/LucasSKrewer/kenshi-modkit">LucasSKrewer/kenshi-modkit</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Modding toolkit and file parser for the PC game Kenshi, not an engine port or emulator.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/kundlatsch/bge">kundlatsch/bge</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Custom 2D/3D Python-based AI-first game engine, not a specific port candidate or retro game.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/fabiangonzalezdev/Mimo-FE">fabiangonzalezdev/Mimo-FE</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">This repository is a desktop game library frontend and launcher built with React, Tauri, and Rust. It is not an open source game, emulator, or engine port suitable for PortMaster, but rather a frontend application itself.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/paautyp-dev/farm">paautyp-dev/farm</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Roblox script asset/decompiled snippet, not an open source game project or port.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/semnavmeleon/BedWarsRUST">semnavmeleon/BedWarsRUST</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Server-side plugin for Rust (the multiplayer PC survival game), irrelevant to standalone handheld ports.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/thiagolegrand/FX30-Controller">thiagolegrand/FX30-Controller</a></td>
+            <td data-label="Stars">1</td>
+            <td data-label="Reason" class="muted-cell">Hardware controller application for a Sony cinema camera.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/talontownsend/fh6-traction-control">talontownsend/fh6-traction-control</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Real-time traction control helper utility running on Windows for a modern racing game.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/JMarchiori13/wacatac-detection-analysis">JMarchiori13/wacatac-detection-analysis</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Security analysis documentation concerning Microsoft Defender's Wacatac detection.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/cocacola-dev/onlyfans-reverse">cocacola-dev/onlyfans-reverse</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">API request-signing extractor and scraper tool for a social media website.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/ejouanchicot/ffxi-macro-editor">ejouanchicot/ffxi-macro-editor</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Utility/editor for Final Fantasy XI macros, not an open-source game or port relevant to PortMaster.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/chris13work/Cat-War">chris13work/Cat-War</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">HTML5 Canvas browser/mobile game wrapper, not an SDL/native game port suitable for PortMaster.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/KanadeK/savedelta">KanadeK/savedelta</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">CLI binary diff and file analysis tool for finding where app/save states are changed, but not a game or emulator itself.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/KanadeK/savecompat">KanadeK/savecompat</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Engine-agnostic save migration testing library and CLI.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/monterto/purper-web">monterto/purper-web</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Web-based JavaScript port of a small GameMaker tech demo, not suitable for PortMaster handhelds.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/codahq/pearlmod-disc-golf">codahq/pearlmod-disc-golf</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Minecraft mod (NeoForge), irrelevant to PortMaster.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/mhadifilms/serializd-exporter">mhadifilms/serializd-exporter</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Python tool to export user data from the Serializd TV tracking website.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/ericboehs/aosmith-water-heater">ericboehs/aosmith-water-heater</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Home automation and monitoring tool for a water heater via RS-485 and MQTT.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/ahicks92/soundz">ahicks92/soundz</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Accessibility mod for Shapez 2 on PC, not relevant to retro handheld console gaming or ports.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/MarkrPearce96/Genesis-Plus-GX">MarkrPearce96/Genesis-Plus-GX</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Excluded by category preference (emulator)</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/EmiiBytee/np2kai-ps4">EmiiBytee/np2kai-ps4</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Excluded by category preference (emulator)</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/Windy4/ChoicerVoicerAutoPack">Windy4/ChoicerVoicerAutoPack</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Modding and content pack automator tool for a specific browser/web game.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/LobsterEnergize/dead-by-daylight-enhancer">LobsterEnergize/dead-by-daylight-enhancer</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Cheat, exploit or trainer utility for a modern PC game.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/lanecrowsheave/war-thunder-overlay-assistant">lanecrowsheave/war-thunder-overlay-assistant</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Desktop overlay utility/cheat tool for War Thunder.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/brendangooden/j2208-band-tools">brendangooden/j2208-band-tools</a></td>
+            <td data-label="Stars">1</td>
+            <td data-label="Reason" class="muted-cell">Raw BLE client and protocol documentation for fitness tracker wristbands.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/PartNautilus/manual-map-mod-tool">PartNautilus/manual-map-mod-tool</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Windows manual mapping DLL injector tool.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/Arenatergrasp/dll-loader-utility">Arenatergrasp/dll-loader-utility</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Windows DLL injection utility for security and modding research.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/Craterespindle23/process-config-editor">Craterespindle23/process-config-editor</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Windows systems utility and process manager.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/SnatchTrailAqueduct/engine-mod-manager">SnatchTrailAqueduct/engine-mod-manager</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Helper utility for managing Cheat Engine tables and PC game mods on Windows.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/PhuVinhAI/ModTS4">PhuVinhAI/ModTS4</a></td>
+            <td data-label="Stars">0</td>
+            <td data-label="Reason" class="muted-cell">Workspace tool for managing The Sims 4 mods and script decompilation, completely unrelated to retro handheld game engines or emulators.</td>
+          </tr>
+          
+          <tr>
+            <td data-label="Name"><a href="https://github.com/shangexe/hourairando">shangexe/hourairando</a></td>
+            <td data-label="Stars">2</td>
+            <td data-label="Reason" class="muted-cell">The repository lacks sufficient description, documentation, or code structure to determine relevance to game porting.</td>
+          </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <footer class="page-footer">Generated by gh_trending_reports</footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.getElementById('theme-toggle');
+  var stored = localStorage.getItem('theme');
+  if (stored) root.setAttribute('data-theme', stored);
+
+  toggle.addEventListener('click', function () {
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var current = root.getAttribute('data-theme') || (prefersDark ? 'dark' : 'light');
+    var next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+})();
+
+(function () {
+  var searchBox = document.getElementById('search-box');
+  var table = document.getElementById('archive-table');
+  if (!table) return;
+  var tbody = table.tBodies[0];
+  var rows = Array.prototype.slice.call(tbody.rows);
+
+  searchBox.addEventListener('input', function () {
+    var term = searchBox.value.trim().toLowerCase();
+    rows.forEach(function (row) {
+      row.style.display = row.textContent.toLowerCase().indexOf(term) === -1 ? 'none' : '';
+    });
+  });
+
+  var headers = Array.prototype.slice.call(table.tHead.rows[0].cells);
+  var sortState = { col: null, dir: 1 };
+  headers.forEach(function (th, colIndex) {
+    th.addEventListener('click', function () {
+      var type = th.getAttribute('data-type') || 'text';
+      sortState.dir = sortState.col === colIndex ? -sortState.dir : -1;
+      sortState.col = colIndex;
+
+      var sorted = rows.slice().sort(function (a, b) {
+        var av = a.cells[colIndex].textContent.trim();
+        var bv = b.cells[colIndex].textContent.trim();
+        if (type === 'num') {
+          av = parseFloat(av) || 0;
+          bv = parseFloat(bv) || 0;
+          return (av - bv) * sortState.dir;
+        }
+        return av.localeCompare(bv) * sortState.dir;
+      });
+      sorted.forEach(function (row) { tbody.appendChild(row); });
+      rows = sorted;
+    });
+  });
+})();
+</script>
 </body>
 </html>
