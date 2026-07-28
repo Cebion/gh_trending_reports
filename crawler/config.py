@@ -76,12 +76,18 @@ RECHECK_INACTIVE_INTERVAL_DAYS = 28
 
 # --- LLM classification (Gemini) -----------------------------------------
 
-GEMINI_MODEL = "gemini-2.5-flash-lite"
+# Google retires/renames Gemini model ids periodically (gemini-2.5-flash-lite
+# was cut off for new API keys on 2026-07-22, with no stable "-latest" alias
+# to fall back on). If classification starts failing with a 404 mentioning
+# the model name, check https://ai.google.dev/gemini-api/docs/models for the
+# current GA flash-lite-tier model and update this constant.
+GEMINI_MODEL = "gemini-3.5-flash-lite"
 GEMINI_API_URL = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     "{model}:generateContent"
 )
 CLASSIFY_BATCH_SIZE = 12
+CLASSIFY_BATCH_DELAY_SECONDS = 3
 README_EXCERPT_CHARS = 1500
 CLASSIFIER_SCHEMA_VERSION = 1
 
@@ -149,4 +155,10 @@ RISING_ABS_HIGH_DELTA = 50
 
 MAX_RETRIES = 4
 BACKOFF_BASE_SECONDS = 2
+
+# Separate buffers per GitHub rate-limit bucket -- core (5000/hr) and search
+# (30/min) are tracked independently since conflating them (treating a
+# near-exhausted search-bucket reading as if it were the core budget, or
+# vice versa) causes spurious multi-second sleeps on the wrong endpoint.
 RATE_LIMIT_REMAINING_BUFFER = 50
+SEARCH_RATE_LIMIT_REMAINING_BUFFER = 2

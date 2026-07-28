@@ -18,8 +18,15 @@ class GitHubClient:
     def __init__(self, token, session=None):
         self.token = token
         self.session = session or requests.Session()
-        self._core_remaining = None
-        self._core_reset = None
+        # Tracked per rate-limit bucket -- GitHub's core (5000/hr) and search
+        # (30/min) resources are independent, and a response's rate-limit
+        # headers only ever describe the bucket the endpoint it hit belongs
+        # to. Conflating them into one counter previously meant a nearly-
+        # exhausted *search* reading (normal after a few queries) got
+        # misread as the *core* budget being low, triggering pointless
+        # multi-second sleeps before unrelated core-endpoint calls.
+        self._remaining = {"core": None, "search": None}
+        self._reset = {"core": None, "search": None}
 
     def _headers(self, accept="application/vnd.github.v3+json"):
         headers = {"Accept": accept}
@@ -27,28 +34,36 @@ class GitHubClient:
             headers["Authorization"] = f"token {self.token}"
         return headers
 
-    def _sleep_if_core_budget_low(self):
-        if self._core_remaining is not None and self._core_remaining < config.RATE_LIMIT_REMAINING_BUFFER:
-            wait = max(0, (self._core_reset or 0) - time.time()) + 1
+    def _sleep_if_budget_low(self, resource):
+        remaining = self._remaining.get(resource)
+        reset = self._reset.get(resource)
+        buffer = (
+            config.SEARCH_RATE_LIMIT_REMAINING_BUFFER
+            if resource == "search"
+            else config.RATE_LIMIT_REMAINING_BUFFER
+        )
+        if remaining is not None and remaining < buffer:
+            wait = max(0, (reset or 0) - time.time()) + 1
             if wait > 0:
-                print(f"[github_api] core rate limit low ({self._core_remaining} left), sleeping {wait:.0f}s")
+                print(f"[github_api] {resource} rate limit low ({remaining} left), sleeping {wait:.0f}s")
                 time.sleep(wait)
 
-    def _track_rate_limit(self, response):
+    def _track_rate_limit(self, response, resource):
         remaining = response.headers.get("X-RateLimit-Remaining")
         reset = response.headers.get("X-RateLimit-Reset")
         if remaining is not None and reset is not None:
             try:
-                self._core_remaining = int(remaining)
-                self._core_reset = int(reset)
+                self._remaining[resource] = int(remaining)
+                self._reset[resource] = int(reset)
             except ValueError:
                 pass
 
-    def _request(self, method, url, params=None, accept=None, allow_404=False):
+    def _request(self, method, url, params=None, accept=None, allow_404=False, resource="core"):
         """Issue a request with exponential backoff on 403/429/5xx, honoring
         Retry-After when present. Returns the Response, or None on a 404
-        when allow_404=True."""
-        self._sleep_if_core_budget_low()
+        when allow_404=True. `resource` selects which rate-limit bucket
+        ("core" or "search") this endpoint counts against."""
+        self._sleep_if_budget_low(resource)
         headers = self._headers(accept) if accept else self._headers()
 
         last_exc = None
@@ -62,7 +77,7 @@ class GitHubClient:
                 time.sleep(delay)
                 continue
 
-            self._track_rate_limit(response)
+            self._track_rate_limit(response, resource)
 
             if response.status_code == 404 and allow_404:
                 return None
@@ -102,7 +117,9 @@ class GitHubClient:
                 "per_page": config.PER_PAGE,
                 "page": page,
             }
-            response = self._request("GET", f"{API_ROOT}/search/repositories", params=params)
+            response = self._request(
+                "GET", f"{API_ROOT}/search/repositories", params=params, resource="search"
+            )
 
             if response is None or response.status_code != 200:
                 status = response.status_code if response is not None else "no response"

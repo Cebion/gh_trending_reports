@@ -36,6 +36,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PYTHONUNBUFFERED: "1"
         run: python run.py
 
       # Commit the updated watchlist to `main` BEFORE publishing the report.

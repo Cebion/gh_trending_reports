@@ -18,7 +18,17 @@ from . import config
 
 
 class ClassificationError(Exception):
-    pass
+    """Recoverable classification failure (parse error, mismatched batch
+    response, transient outage) -- worth retrying/splitting/falling back to
+    pending on a per-repo basis."""
+
+
+class FatalClassificationError(ClassificationError):
+    """Non-retryable failure that will fail identically for every batch this
+    run (bad API key, invalid/deprecated model name, etc). Retrying or
+    splitting into smaller batches cannot help and only wastes hours -- this
+    must abort the whole classification pass immediately instead of being
+    rediscovered batch-by-batch."""
 
 
 def _pending_classification():
@@ -69,6 +79,16 @@ def _call_gemini(api_key, batch_inputs, session):
             last_exc = exc
             time.sleep(config.BACKOFF_BASE_SECONDS * (2 ** attempt))
             continue
+
+        # 401/403/404 mean the API key or model name itself is bad -- the
+        # exact same request will fail the exact same way on every retry and
+        # every other batch this run, so fail fast instead of retrying.
+        if response.status_code in (401, 403, 404):
+            raise FatalClassificationError(
+                f"Gemini call failed with a non-retryable error -- check GEMINI_API_KEY and "
+                f"whether model {config.GEMINI_MODEL!r} still exists: "
+                f"{response.status_code} {response.text[:300]}"
+            )
 
         if response.status_code == 429 or response.status_code >= 500:
             retry_after = response.headers.get("Retry-After")
@@ -122,6 +142,8 @@ def _classify_batch(api_key, records_with_readmes, session, allow_split=True):
     try:
         payload = _call_gemini(api_key, batch_inputs, session)
         return _parse_response(payload, expected_names)
+    except FatalClassificationError:
+        raise  # not batch-content-specific -- splitting/retrying won't help, let it propagate
     except ClassificationError as exc:
         print(f"[classify] batch of {len(records_with_readmes)} failed: {exc}")
 
@@ -152,7 +174,22 @@ def classify_new_repos(api_key, github_client, records):
     verdicts_by_name = {}
     for i in range(0, len(records_with_readmes), config.CLASSIFY_BATCH_SIZE):
         batch = records_with_readmes[i : i + config.CLASSIFY_BATCH_SIZE]
-        verdicts_by_name.update(_classify_batch(api_key, batch, session))
+        try:
+            verdicts_by_name.update(_classify_batch(api_key, batch, session))
+        except FatalClassificationError as exc:
+            # This will fail identically for every remaining batch (bad key,
+            # dead model, ...) -- stop immediately rather than rediscovering
+            # the same fatal error dozens of times over. Everything not yet
+            # classified falls back to "pending" below and gets retried next
+            # run once the underlying config issue is fixed.
+            print(f"[classify] {exc}")
+            print(
+                f"[classify] aborting classification for this run -- "
+                f"{len(records) - len(verdicts_by_name)} repos left pending"
+            )
+            break
+        if i + config.CLASSIFY_BATCH_SIZE < len(records_with_readmes):
+            time.sleep(config.CLASSIFY_BATCH_DELAY_SECONDS)
 
     for record in records:
         verdict = verdicts_by_name.get(record["full_name"])
