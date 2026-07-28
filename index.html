@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Trending Repositories</title>
+    <meta charset="utf-8">
+    <title>PortMaster Candidate Scout</title>
     <link href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/colreorder/1.5.3/css/colReorder.dataTables.min.css" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -9,863 +10,88 @@
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/colreorder/1.5.3/js/dataTables.colReorder.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <style>
+        .badge-new { background-color: #28a745; color: #fff; }
+        .badge-rising { background-color: #fd7e14; color: #fff; }
+        .reason-cell { max-width: 320px; font-size: 0.9em; color: #555; }
+        .card-repo { margin-bottom: 1rem; }
+    </style>
 </head>
 <body>
     <div class="container py-5">
-        <h1 class="mb-5">Trending Repositories</h1>
-        <table id="repos" class="table table-striped table-bordered" style="width:100%">
+        <h1 class="mb-2">PortMaster Candidate Scout</h1>
+        <p class="text-muted">Run: 2026-07-27</p>
+
+        <div class="row mb-4">
+            <div class="col">
+                <span class="badge badge-secondary mr-2">0 new</span>
+                <span class="badge badge-secondary mr-2">0 rising</span>
+                <span class="badge badge-secondary mr-2">0 tracked</span>
+                <span class="badge badge-secondary mr-2">1080 awaiting classification</span>
+                <span class="badge badge-secondary">0 excluded as noise</span>
+            </div>
+        </div>
+
+        <h2 class="mb-3">New this week</h2>
+        
+        <p class="text-muted">No new candidates this week.</p>
+        
+
+        <h2 class="mb-3 mt-5">Rising this week</h2>
+        
+        <p class="text-muted">Nothing crossed the growth threshold this week.</p>
+        
+
+        <h2 class="mb-3 mt-5">Full watchlist</h2>
+        <table id="archive" class="table table-striped table-bordered" style="width:100%">
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>URL</th>
                     <th>Stars</th>
+                    <th>Category</th>
+                    <th>Confidence</th>
+                    <th>Language</th>
+                    <th>First seen</th>
+                    <th>Last rising</th>
                     <th>Description</th>
-                    <th>Creation Date</th>
+                    <th>Reason</th>
                 </tr>
             </thead>
             <tbody>
                 
-                    <tr>
-                        <td>aiplanet-macos</td>
-                        <td><a href="https://github.com/ziadgit/aiplanet-macos">https://github.com/ziadgit/aiplanet-macos</a></td>
-                        <td>1</td>
-                        <td>macOS port of AIPlanet, the 2003 artificial-life planet simulator (Swift + SceneKit)</td>
-                        <td>2026-07-21T08:03:12Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>GCN_Port--Deathchase_3D--Type_A</td>
-                        <td><a href="https://github.com/SABrereton/GCN_Port--Deathchase_3D--Type_A">https://github.com/SABrereton/GCN_Port--Deathchase_3D--Type_A</a></td>
-                        <td>0</td>
-                        <td>Ports of the Deathchase remake "Deathchase 3D" with minimal alterations.</td>
-                        <td>2026-07-16T17:37:35Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>ya-eto-ty-web</td>
-                        <td><a href="https://github.com/santoni-star/ya-eto-ty-web">https://github.com/santoni-star/ya-eto-ty-web</a></td>
-                        <td>0</td>
-                        <td>JS port of Я-Це-Ти — terminal AI consciousness game</td>
-                        <td>2026-07-14T17:35:51Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>crisp-game-lib-portable_vircon32</td>
-                        <td><a href="https://github.com/joyrider3774/crisp-game-lib-portable_vircon32">https://github.com/joyrider3774/crisp-game-lib-portable_vircon32</a></td>
-                        <td>0</td>
-                        <td>A Port of Crisp Game Lib Portable to the vircon32 Fantasy Console</td>
-                        <td>2026-07-23T02:34:06Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>revenant</td>
-                        <td><a href="https://github.com/MattKulka/revenant">https://github.com/MattKulka/revenant</a></td>
-                        <td>0</td>
-                        <td>A browser puzzle game where you cooperate with perfect replays of your own past runs. Hand-written bit-exact deterministic sim, 24 levels, rollback netcode, Rust port. Play: revenant-zeta.vercel.app</td>
-                        <td>2026-07-15T19:50:18Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>mek</td>
-                        <td><a href="https://github.com/DerrickZeus/mek">https://github.com/DerrickZeus/mek</a></td>
-                        <td>3</td>
-                        <td>A zero-dependency, lightweight, high-performance 2D math, geometry, and spatial utility library written in pure Lua.</td>
-                        <td>2026-07-23T10:36:42Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>lovelove</td>
-                        <td><a href="https://github.com/lurymorais/lovelove">https://github.com/lurymorais/lovelove</a></td>
-                        <td>1</td>
-                        <td>For romantics who want to ask someone out on a date</td>
-                        <td>2026-07-21T20:28:53Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Digital-Flower</td>
-                        <td><a href="https://github.com/AceBreaker-cell/Digital-Flower">https://github.com/AceBreaker-cell/Digital-Flower</a></td>
-                        <td>1</td>
-                        <td>Digital Flower, made for your special person!</td>
-                        <td>2026-07-24T02:44:10Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>SidharthXEdit-</td>
-                        <td><a href="https://github.com/makhalff-afk/SidharthXEdit-">https://github.com/makhalff-afk/SidharthXEdit-</a></td>
-                        <td>1</td>
-                        <td>For only one side lovers</td>
-                        <td>2026-07-21T12:52:19Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>memories-with-ankuu</td>
-                        <td><a href="https://github.com/iamjaved026/memories-with-ankuu">https://github.com/iamjaved026/memories-with-ankuu</a></td>
-                        <td>1</td>
-                        <td>A beautifully animated, interactive digital memory lane built to celebrate a special bond. Features a live timeline counter, custom scroll animations, a data dashboard, and 3D flip cards built with Vanilla HTML/CSS/JS. ✨</td>
-                        <td>2026-07-15T11:07:51Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>gift-project</td>
-                        <td><a href="https://github.com/huy207ff04-cpu/gift-project">https://github.com/huy207ff04-cpu/gift-project</a></td>
-                        <td>0</td>
-                        <td>kakaka</td>
-                        <td>2026-07-18T03:46:14Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>love2d-zed</td>
-                        <td><a href="https://github.com/anidotdev/love2d-zed">https://github.com/anidotdev/love2d-zed</a></td>
-                        <td>0</td>
-                        <td>A Zed extension for developing games with the LÖVE framework.</td>
-                        <td>2026-07-18T05:02:38Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>save-gpt-5-5.fyi</td>
-                        <td><a href="https://github.com/agunal/save-gpt-5-5.fyi">https://github.com/agunal/save-gpt-5-5.fyi</a></td>
-                        <td>0</td>
-                        <td>Save GPT-5.5</td>
-                        <td>2026-07-19T01:58:10Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>attachment</td>
-                        <td><a href="https://github.com/AmeHakumei/attachment">https://github.com/AmeHakumei/attachment</a></td>
-                        <td>0</td>
-                        <td>Made in tandem with AI (research for scientific accuracy, code handling, & general text writeup) with human oversight (cohesiveness, expression, feeling, presentation, direction).</td>
-                        <td>2026-07-21T17:39:42Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Vouch</td>
-                        <td><a href="https://github.com/kiera251197/Vouch">https://github.com/kiera251197/Vouch</a></td>
-                        <td>0</td>
-                        <td>A modern matchmaking and dating web application built with PHP, MySQL and CSS. Allows users to sign up as singles or matchmakers to connect through their trusted inner circles.</td>
-                        <td>2026-07-23T18:33:25Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>mek</td>
-                        <td><a href="https://github.com/DerrickZeus/mek">https://github.com/DerrickZeus/mek</a></td>
-                        <td>3</td>
-                        <td>A zero-dependency, lightweight, high-performance 2D math, geometry, and spatial utility library written in pure Lua.</td>
-                        <td>2026-07-23T10:36:42Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>tgn-pong</td>
-                        <td><a href="https://github.com/Ted-George/tgn-pong">https://github.com/Ted-George/tgn-pong</a></td>
-                        <td>0</td>
-                        <td>No description provided.</td>
-                        <td>2026-07-23T19:56:21Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>love2d-zed</td>
-                        <td><a href="https://github.com/anidotdev/love2d-zed">https://github.com/anidotdev/love2d-zed</a></td>
-                        <td>0</td>
-                        <td>A Zed extension for developing games with the LÖVE framework.</td>
-                        <td>2026-07-18T05:02:38Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>VandalHearts-PcPort</td>
-                        <td><a href="https://github.com/HalmyLyseas/VandalHearts-PcPort">https://github.com/HalmyLyseas/VandalHearts-PcPort</a></td>
-                        <td>4</td>
-                        <td>Native PC port of the PlayStation game Vandal Hearts, built on a byte-exact matching decompilation. Windows & Linux; bring your own disc.</td>
-                        <td>2026-07-23T09:44:22Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>SRB2Kart-PSVita-PSTV</td>
-                        <td><a href="https://github.com/Esodland/SRB2Kart-PSVita-PSTV">https://github.com/Esodland/SRB2Kart-PSVita-PSTV</a></td>
-                        <td>3</td>
-                        <td>PS Vita / PS TV port of SRB2Kart (Kart Krew), built on Rinnegatamante's vitaGL. Hardware OpenGL, ~60 FPS, online multiplayer. GPL-2.0 - game assets not included.</td>
-                        <td>2026-07-14T10:34:04Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>piko</td>
-                        <td><a href="https://github.com/aquagoose/piko">https://github.com/aquagoose/piko</a></td>
-                        <td>3</td>
-                        <td>A small n cute set of actually good* gamedev-focused bindings for C#.</td>
-                        <td>2026-07-22T15:46:13Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>DasErbe</td>
-                        <td><a href="https://github.com/codengine/DasErbe">https://github.com/codengine/DasErbe</a></td>
-                        <td>1</td>
-                        <td>An unofficial modern C# port of "Das Erbe", which was released in 1991 by Rauser Advertainment GmbH as a so called "Ad-venture"</td>
-                        <td>2026-07-14T01:29:18Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>cpp-l2d</td>
-                        <td><a href="https://github.com/arkenidar/cpp-l2d">https://github.com/arkenidar/cpp-l2d</a></td>
-                        <td>1</td>
-                        <td>C++20/SDL2 port of l2d-im with a reusable Love2D-like library (l2d)</td>
-                        <td>2026-07-18T17:30:24Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Sfaui-ImGui-editor</td>
-                        <td><a href="https://github.com/SKYCNB/Sfaui-ImGui-editor">https://github.com/SKYCNB/Sfaui-ImGui-editor</a></td>
-                        <td>1</td>
-                        <td>SkyC for Dear ImGui editor, a lightweight online tool to draft ImGui UI layouts</td>
-                        <td>2026-07-20T07:47:12Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Portfolio-Builder</td>
-                        <td><a href="https://github.com/KothintiTharun035/Portfolio-Builder">https://github.com/KothintiTharun035/Portfolio-Builder</a></td>
-                        <td>1</td>
-                        <td>A full-stack MERN Portfolio Builder with authentication, dynamic portfolio generation, project management, Firebase image uploads, and responsive UI.</td>
-                        <td>2026-07-14T15:44:58Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>devhost</td>
-                        <td><a href="https://github.com/wickedev/devhost">https://github.com/wickedev/devhost</a></td>
-                        <td>1</td>
-                        <td>Per-directory port virtualization for dev servers — every project and git worktree gets its own loopback IP, so they can all bind :3000 at once</td>
-                        <td>2026-07-16T11:20:18Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>CurrencyExplorer</td>
-                        <td><a href="https://github.com/Nidhish986/CurrencyExplorer">https://github.com/Nidhish986/CurrencyExplorer</a></td>
-                        <td>0</td>
-                        <td>Global Money Companion – A React + TypeScript web application for live currency conversion, PPP salary comparison, historical exchange rates, and world currency exploration.</td>
-                        <td>2026-07-14T10:59:31Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>vfo-transmitter-server-go</td>
-                        <td><a href="https://github.com/KillerCrab99966/vfo-transmitter-server-go">https://github.com/KillerCrab99966/vfo-transmitter-server-go</a></td>
-                        <td>0</td>
-                        <td>Jonathan Beckett's VirtualFlight.Online Transmitter Server ported to Golang</td>
-                        <td>2026-07-20T04:49:29Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>max-go</td>
-                        <td><a href="https://github.com/suglasp/max-go">https://github.com/suglasp/max-go</a></td>
-                        <td>0</td>
-                        <td>M.A.X. - Interplay's (TM) 1996 game M.A.X. Golang port</td>
-                        <td>2026-07-25T18:54:59Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>portfolio</td>
-                        <td><a href="https://github.com/iffamasoud/portfolio">https://github.com/iffamasoud/portfolio</a></td>
-                        <td>0</td>
-                        <td>Personal portfolio website showcasing my skills, projects, and UI/UX design work — built with HTML, CSS, and JavaScript.</td>
-                        <td>2026-07-13T19:47:17Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>bloodmagic-legacy-1.21.1</td>
-                        <td><a href="https://github.com/Gaigen/bloodmagic-legacy-1.21.1">https://github.com/Gaigen/bloodmagic-legacy-1.21.1</a></td>
-                        <td>0</td>
-                        <td>Unofficial NeoForge port of Blood Magic 1.7.10 for Minecraft 1.21.1</td>
-                        <td>2026-07-14T18:13:46Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>GCN_Port--Deathchase_3D--Type_A</td>
-                        <td><a href="https://github.com/SABrereton/GCN_Port--Deathchase_3D--Type_A">https://github.com/SABrereton/GCN_Port--Deathchase_3D--Type_A</a></td>
-                        <td>0</td>
-                        <td>Ports of the Deathchase remake "Deathchase 3D" with minimal alterations.</td>
-                        <td>2026-07-16T17:37:35Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>marees-france</td>
-                        <td><a href="https://github.com/cristo67000/marees-france">https://github.com/cristo67000/marees-france</a></td>
-                        <td>0</td>
-                        <td>Application gratuite des marées françaises, coefficients, phares.. fonctionne hors connexion</td>
-                        <td>2026-07-15T17:21:37Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>singapore-container-traffic</td>
-                        <td><a href="https://github.com/weiyuet/singapore-container-traffic">https://github.com/weiyuet/singapore-container-traffic</a></td>
-                        <td>0</td>
-                        <td>Analyzing container traffic through Singapore.</td>
-                        <td>2026-07-18T16:37:56Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>jezzball-nes</td>
-                        <td><a href="https://github.com/ronaldstoner/jezzball-nes">https://github.com/ronaldstoner/jezzball-nes</a></td>
-                        <td>0</td>
-                        <td>Jezzball for the Nintendo Entertainment System (NES)</td>
-                        <td>2026-07-18T03:06:55Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>wiiu-lba2</td>
-                        <td><a href="https://github.com/vs-sr-dev/wiiu-lba2">https://github.com/vs-sr-dev/wiiu-lba2</a></td>
-                        <td>0</td>
-                        <td>Wii U port of Little Big Adventure 2 / Twinsen's Odyssey — original 1997 Adeline source (2.21/LBALab community release), completed start-to-finish on real hardware. See README-WIIU.md</td>
-                        <td>2026-07-13T05:49:37Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>pironman5-rust</td>
-                        <td><a href="https://github.com/dormammuuuuu/pironman5-rust">https://github.com/dormammuuuuu/pironman5-rust</a></td>
-                        <td>0</td>
-                        <td>Lightweight Rust daemon for the SunFounder Pironman 5 (Raspberry Pi 5): fan control, WS2812 RGB, SSD1306 OLED, SQLite    ▎ history, and a built-in web dashboard — replacing the Python + InfluxDB stack in ~1–4 MB of RAM.</td>
-                        <td>2026-07-17T22:56:59Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>ottd-macos9</td>
-                        <td><a href="https://github.com/felipedbene/ottd-macos9">https://github.com/felipedbene/ottd-macos9</a></td>
-                        <td>0</td>
-                        <td>OpenTTD ported to Mac OS 9 / PowerPC (Retro68 toolchain)</td>
-                        <td>2026-07-19T18:54:43Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Port-Scanner</td>
-                        <td><a href="https://github.com/boriss24/Port-Scanner">https://github.com/boriss24/Port-Scanner</a></td>
-                        <td>0</td>
-                        <td>Port Scanner</td>
-                        <td>2026-07-16T13:43:45Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>DioramaBreakDemoPublic</td>
-                        <td><a href="https://github.com/massim0g/DioramaBreakDemoPublic">https://github.com/massim0g/DioramaBreakDemoPublic</a></td>
-                        <td>15</td>
-                        <td>Diorama Break Demo source code - A tactics JRPG made with a custom engine written in ODIN</td>
-                        <td>2026-07-17T03:08:41Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>VandalHearts-PcPort</td>
-                        <td><a href="https://github.com/HalmyLyseas/VandalHearts-PcPort">https://github.com/HalmyLyseas/VandalHearts-PcPort</a></td>
-                        <td>4</td>
-                        <td>Native PC port of the PlayStation game Vandal Hearts, built on a byte-exact matching decompilation. Windows & Linux; bring your own disc.</td>
-                        <td>2026-07-23T09:44:22Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>SRB2Kart-PSVita-PSTV</td>
-                        <td><a href="https://github.com/Esodland/SRB2Kart-PSVita-PSTV">https://github.com/Esodland/SRB2Kart-PSVita-PSTV</a></td>
-                        <td>3</td>
-                        <td>PS Vita / PS TV port of SRB2Kart (Kart Krew), built on Rinnegatamante's vitaGL. Hardware OpenGL, ~60 FPS, online multiplayer. GPL-2.0 - game assets not included.</td>
-                        <td>2026-07-14T10:34:04Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>olduvai</td>
-                        <td><a href="https://github.com/ksokolowski/olduvai">https://github.com/ksokolowski/olduvai</a></td>
-                        <td>3</td>
-                        <td>From-scratch C++/SDL2 reimplementation of the Prehistorik (1991) engine — bring your own game files.</td>
-                        <td>2026-07-19T11:06:02Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>adb-studio</td>
-                        <td><a href="https://github.com/CRTYPUBG/adb-studio">https://github.com/CRTYPUBG/adb-studio</a></td>
-                        <td>2</td>
-                        <td>Modern open-source Android Device Management Platform built with C++20, Qt 6, and CMake for Windows-first, cross-platform-ready device management, screen mirroring, diagnostics, and developer tools.</td>
-                        <td>2026-07-20T16:09:50Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>DasErbe</td>
-                        <td><a href="https://github.com/codengine/DasErbe">https://github.com/codengine/DasErbe</a></td>
-                        <td>1</td>
-                        <td>An unofficial modern C# port of "Das Erbe", which was released in 1991 by Rauser Advertainment GmbH as a so called "Ad-venture"</td>
-                        <td>2026-07-14T01:29:18Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>cpp-l2d</td>
-                        <td><a href="https://github.com/arkenidar/cpp-l2d">https://github.com/arkenidar/cpp-l2d</a></td>
-                        <td>1</td>
-                        <td>C++20/SDL2 port of l2d-im with a reusable Love2D-like library (l2d)</td>
-                        <td>2026-07-18T17:30:24Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Portfolio-Builder</td>
-                        <td><a href="https://github.com/KothintiTharun035/Portfolio-Builder">https://github.com/KothintiTharun035/Portfolio-Builder</a></td>
-                        <td>1</td>
-                        <td>A full-stack MERN Portfolio Builder with authentication, dynamic portfolio generation, project management, Firebase image uploads, and responsive UI.</td>
-                        <td>2026-07-14T15:44:58Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>devhost</td>
-                        <td><a href="https://github.com/wickedev/devhost">https://github.com/wickedev/devhost</a></td>
-                        <td>1</td>
-                        <td>Per-directory port virtualization for dev servers — every project and git worktree gets its own loopback IP, so they can all bind :3000 at once</td>
-                        <td>2026-07-16T11:20:18Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>androwish-tcl91</td>
-                        <td><a href="https://github.com/johnbuckman/androwish-tcl91">https://github.com/johnbuckman/androwish-tcl91</a></td>
-                        <td>1</td>
-                        <td>AndroWish (Tcl/Tk on Android, SDL2/AGG) ported to Tcl/Tk 9.1b0 — docs, ndk-build config patches and scripts</td>
-                        <td>2026-07-20T06:45:18Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>retsend</td>
-                        <td><a href="https://github.com/mxmgorin/retsend">https://github.com/mxmgorin/retsend</a></td>
-                        <td>1</td>
-                        <td>LocalSend-compatible client for retro handhelds — send and receive files over Wi-Fi</td>
-                        <td>2026-07-21T14:04:38Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>emulators</td>
-                        <td><a href="https://github.com/milo-language/emulators">https://github.com/milo-language/emulators</a></td>
-                        <td>1</td>
-                        <td>NES, SNES, and Genesis emulators written in Milo</td>
-                        <td>2026-07-23T05:22:35Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Checkers</td>
-                        <td><a href="https://github.com/Minokainduwara/Checkers">https://github.com/Minokainduwara/Checkers</a></td>
-                        <td>1</td>
-                        <td>A modern cross-platform checkers game built in C using SDL2, featuring a polished GUI, AI opponent, animations, themes, save/load functionality, and a modular game engine.</td>
-                        <td>2026-07-18T22:26:32Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>CurrencyExplorer</td>
-                        <td><a href="https://github.com/Nidhish986/CurrencyExplorer">https://github.com/Nidhish986/CurrencyExplorer</a></td>
-                        <td>0</td>
-                        <td>Global Money Companion – A React + TypeScript web application for live currency conversion, PPP salary comparison, historical exchange rates, and world currency exploration.</td>
-                        <td>2026-07-14T10:59:31Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>vfo-transmitter-server-go</td>
-                        <td><a href="https://github.com/KillerCrab99966/vfo-transmitter-server-go">https://github.com/KillerCrab99966/vfo-transmitter-server-go</a></td>
-                        <td>0</td>
-                        <td>Jonathan Beckett's VirtualFlight.Online Transmitter Server ported to Golang</td>
-                        <td>2026-07-20T04:49:29Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>max-go</td>
-                        <td><a href="https://github.com/suglasp/max-go">https://github.com/suglasp/max-go</a></td>
-                        <td>0</td>
-                        <td>M.A.X. - Interplay's (TM) 1996 game M.A.X. Golang port</td>
-                        <td>2026-07-25T18:54:59Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>portfolio</td>
-                        <td><a href="https://github.com/iffamasoud/portfolio">https://github.com/iffamasoud/portfolio</a></td>
-                        <td>0</td>
-                        <td>Personal portfolio website showcasing my skills, projects, and UI/UX design work — built with HTML, CSS, and JavaScript.</td>
-                        <td>2026-07-13T19:47:17Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>bloodmagic-legacy-1.21.1</td>
-                        <td><a href="https://github.com/Gaigen/bloodmagic-legacy-1.21.1">https://github.com/Gaigen/bloodmagic-legacy-1.21.1</a></td>
-                        <td>0</td>
-                        <td>Unofficial NeoForge port of Blood Magic 1.7.10 for Minecraft 1.21.1</td>
-                        <td>2026-07-14T18:13:46Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>marees-france</td>
-                        <td><a href="https://github.com/cristo67000/marees-france">https://github.com/cristo67000/marees-france</a></td>
-                        <td>0</td>
-                        <td>Application gratuite des marées françaises, coefficients, phares.. fonctionne hors connexion</td>
-                        <td>2026-07-15T17:21:37Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>singapore-container-traffic</td>
-                        <td><a href="https://github.com/weiyuet/singapore-container-traffic">https://github.com/weiyuet/singapore-container-traffic</a></td>
-                        <td>0</td>
-                        <td>Analyzing container traffic through Singapore.</td>
-                        <td>2026-07-18T16:37:56Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>jezzball-nes</td>
-                        <td><a href="https://github.com/ronaldstoner/jezzball-nes">https://github.com/ronaldstoner/jezzball-nes</a></td>
-                        <td>0</td>
-                        <td>Jezzball for the Nintendo Entertainment System (NES)</td>
-                        <td>2026-07-18T03:06:55Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>GCN_Port--Deathchase_3D--Type_A</td>
-                        <td><a href="https://github.com/SABrereton/GCN_Port--Deathchase_3D--Type_A">https://github.com/SABrereton/GCN_Port--Deathchase_3D--Type_A</a></td>
-                        <td>0</td>
-                        <td>Ports of the Deathchase remake "Deathchase 3D" with minimal alterations.</td>
-                        <td>2026-07-16T17:37:35Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>wiiu-lba2</td>
-                        <td><a href="https://github.com/vs-sr-dev/wiiu-lba2">https://github.com/vs-sr-dev/wiiu-lba2</a></td>
-                        <td>0</td>
-                        <td>Wii U port of Little Big Adventure 2 / Twinsen's Odyssey — original 1997 Adeline source (2.21/LBALab community release), completed start-to-finish on real hardware. See README-WIIU.md</td>
-                        <td>2026-07-13T05:49:37Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>pironman5-rust</td>
-                        <td><a href="https://github.com/dormammuuuuu/pironman5-rust">https://github.com/dormammuuuuu/pironman5-rust</a></td>
-                        <td>0</td>
-                        <td>Lightweight Rust daemon for the SunFounder Pironman 5 (Raspberry Pi 5): fan control, WS2812 RGB, SSD1306 OLED, SQLite    ▎ history, and a built-in web dashboard — replacing the Python + InfluxDB stack in ~1–4 MB of RAM.</td>
-                        <td>2026-07-17T22:56:59Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>ottd-macos9</td>
-                        <td><a href="https://github.com/felipedbene/ottd-macos9">https://github.com/felipedbene/ottd-macos9</a></td>
-                        <td>0</td>
-                        <td>OpenTTD ported to Mac OS 9 / PowerPC (Retro68 toolchain)</td>
-                        <td>2026-07-19T18:54:43Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Port-Scanner</td>
-                        <td><a href="https://github.com/boriss24/Port-Scanner">https://github.com/boriss24/Port-Scanner</a></td>
-                        <td>0</td>
-                        <td>Port Scanner</td>
-                        <td>2026-07-16T13:43:45Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Tephron</td>
-                        <td><a href="https://github.com/lemushyman/Tephron">https://github.com/lemushyman/Tephron</a></td>
-                        <td>0</td>
-                        <td>Real-time Vulkan N-body simulator with black holes, pulsars, and gravitational-wave instruments. Spiritual successor to my Year 8 coding project and only prior contribution to GitHub.</td>
-                        <td>2026-07-22T20:13:24Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>imgui-mcp</td>
-                        <td><a href="https://github.com/SaloQT/imgui-mcp">https://github.com/SaloQT/imgui-mcp</a></td>
-                        <td>0</td>
-                        <td>Dear ImGui MCP Server — AI agents design, control & debug game UIs in real-time. 70+ tools, 102 widget types, visual feedback, animation, export. Works with Claude, Cursor, VS Code, omp, Windsurf, Zed, Gemini CLI & more.</td>
-                        <td>2026-07-22T10:30:14Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>ascii-player</td>
-                        <td><a href="https://github.com/mamdous-usual/ascii-player">https://github.com/mamdous-usual/ascii-player</a></td>
-                        <td>0</td>
-                        <td>Terminal video player that renders frames as ASCII art instead of pixels — synced audio, live playback controls, built with ffmpeg + SDL2</td>
-                        <td>2026-07-17T05:47:56Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>SpaceCadetPinball-iOS</td>
-                        <td><a href="https://github.com/anilseyrek/SpaceCadetPinball-iOS">https://github.com/anilseyrek/SpaceCadetPinball-iOS</a></td>
-                        <td>0</td>
-                        <td>Portrait iOS port of 3D Pinball Space Cadet — touch flippers, redesigned score panel, procedural starfield. Build it yourself with free provisioning. Non-commercial hobby project; no game data included.</td>
-                        <td>2026-07-23T01:19:59Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>csbrasil</td>
-                        <td><a href="https://github.com/rubenmarcus/csbrasil">https://github.com/rubenmarcus/csbrasil</a></td>
-                        <td>54</td>
-                        <td>FPS de navegador estilo CS 1.6 — arena de sniper satírica Petistas × Bolsonaristas numa Brasília fictícia. 100% Three.js + vanilla JS, zero build, gerado com Kimi K3.</td>
-                        <td>2026-07-17T16:15:28Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>UnicoreRustPrivate</td>
-                        <td><a href="https://github.com/notkeepitreal/UnicoreRustPrivate">https://github.com/notkeepitreal/UnicoreRustPrivate</a></td>
-                        <td>50</td>
-                        <td>The gaming panel that will enhance your gaming experience</td>
-                        <td>2026-07-25T23:07:28Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>painkiller-vr-mod</td>
-                        <td><a href="https://github.com/FluorescentHallucinogen/painkiller-vr-mod">https://github.com/FluorescentHallucinogen/painkiller-vr-mod</a></td>
-                        <td>20</td>
-                        <td>VR mod for the original “PainKiller” video game</td>
-                        <td>2026-07-13T17:07:52Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>DioramaBreakDemoPublic</td>
-                        <td><a href="https://github.com/massim0g/DioramaBreakDemoPublic">https://github.com/massim0g/DioramaBreakDemoPublic</a></td>
-                        <td>15</td>
-                        <td>Diorama Break Demo source code - A tactics JRPG made with a custom engine written in ODIN</td>
-                        <td>2026-07-17T03:08:41Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>NeuroTrip</td>
-                        <td><a href="https://github.com/Nerolithos/NeuroTrip">https://github.com/Nerolithos/NeuroTrip</a></td>
-                        <td>6</td>
-                        <td>大脑谜境(NeuroTrip)是一场穿越人类意识的迷幻旅行。借助 AI、神经科学与InfoVIs，你将“反主为客”地体验视觉如何欺骗、语言如何塑造、记忆如何重写、恐惧如何预测。欢迎来到你的大脑…但你在学习它时，它也在影响你…                   NeuroTrip —— A trippy experience if the brain functions as a machine and takes you on a trip, making you a part of your brain instead of it being inside of you.</td>
-                        <td>2026-07-23T01:04:10Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>hakoniwa</td>
-                        <td><a href="https://github.com/Shitsuten/hakoniwa">https://github.com/Shitsuten/hakoniwa</a></td>
-                        <td>6</td>
-                        <td>a tiny box world where your AI lives · 你放东西 AI住在里面走来走去</td>
-                        <td>2026-07-19T12:56:55Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>The-Hacker-s-Choice</td>
-                        <td><a href="https://github.com/heyshreee/The-Hacker-s-Choice">https://github.com/heyshreee/The-Hacker-s-Choice</a></td>
-                        <td>5</td>
-                        <td>2d Game based learn hacking,</td>
-                        <td>2026-07-16T02:33:52Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>open-northland</td>
-                        <td><a href="https://github.com/s-nems/open-northland">https://github.com/s-nems/open-northland</a></td>
-                        <td>4</td>
-                        <td>A modern, open-source reimplementation of the Cultures game series </td>
-                        <td>2026-07-13T09:13:49Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>tinyarena</td>
-                        <td><a href="https://github.com/tpoxa/tinyarena">https://github.com/tpoxa/tinyarena</a></td>
-                        <td>4</td>
-                        <td>Browser team deathmatch in one Go binary — blue vs green, Quake-style movement, rocket jumps, quad damage, silly bots, rotating neon Tron maps. No build step, no deps.</td>
-                        <td>2026-07-14T22:17:25Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>BnB</td>
-                        <td><a href="https://github.com/tpoisonooo/BnB">https://github.com/tpoisonooo/BnB</a></td>
-                        <td>4</td>
-                        <td>盛大泡泡堂之 Kimi K3 满血复刻</td>
-                        <td>2026-07-20T03:56:36Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>2049</td>
-                        <td><a href="https://github.com/BeniaBot/2049">https://github.com/BeniaBot/2049</a></td>
-                        <td>3</td>
-                        <td>The classic 2048 with an unexpected twist...</td>
-                        <td>2026-07-16T18:25:33Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>yonghengyuxingchenyurichang</td>
-                        <td><a href="https://github.com/ciallouname/yonghengyuxingchenyurichang">https://github.com/ciallouname/yonghengyuxingchenyurichang</a></td>
-                        <td>3</td>
-                        <td>永恒与星辰与日常</td>
-                        <td>2026-07-17T05:07:14Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>SudokuMaster</td>
-                        <td><a href="https://github.com/MR1229/SudokuMaster">https://github.com/MR1229/SudokuMaster</a></td>
-                        <td>3</td>
-                        <td>Professional Sudoku desktop game built entirely with Python.</td>
-                        <td>2026-07-19T18:17:39Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>ant-race</td>
-                        <td><a href="https://github.com/PenguinCabinet/ant-race">https://github.com/PenguinCabinet/ant-race</a></td>
-                        <td>3</td>
-                        <td>An ant racing game where you accelerate by alternately pressing the arrow keys</td>
-                        <td>2026-07-20T14:59:28Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Codemble</td>
-                        <td><a href="https://github.com/udhawan97/Codemble">https://github.com/udhawan97/Codemble</a></td>
-                        <td>2</td>
-                        <td>A learning game that turns the code AI wrote for you into a galaxy you light up by understanding it.</td>
-                        <td>2026-07-19T00:19:09Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>wobble-rush-3d</td>
-                        <td><a href="https://github.com/aayushman-singh/wobble-rush-3d">https://github.com/aayushman-singh/wobble-rush-3d</a></td>
-                        <td>2</td>
-                        <td>Bright, toy-like 3D obstacle-course game in the browser — Three.js + vanilla JS, no build step. Open index.html and play.</td>
-                        <td>2026-07-16T20:43:17Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>GreeblisWorld</td>
-                        <td><a href="https://github.com/Greeblis/GreeblisWorld">https://github.com/Greeblis/GreeblisWorld</a></td>
-                        <td>2</td>
-                        <td>Greeblis World HTML RPG</td>
-                        <td>2026-07-17T04:08:25Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>storyforge-java</td>
-                        <td><a href="https://github.com/shahmeer-codes/storyforge-java">https://github.com/shahmeer-codes/storyforge-java</a></td>
-                        <td>2</td>
-                        <td>A Java console application that creates funny poems using user-provided words. Built to practice Scanner, Strings, variables, and console output.</td>
-                        <td>2026-07-14T13:27:26Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>minisculp</td>
-                        <td><a href="https://github.com/sammwyy/minisculp">https://github.com/sammwyy/minisculp</a></td>
-                        <td>2</td>
-                        <td>A browser-based 3D modeling agentic tool. Describe what you want to build in natural language.</td>
-                        <td>2026-07-20T05:36:06Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>linefire</td>
-                        <td><a href="https://github.com/crgimenes/linefire">https://github.com/crgimenes/linefire</a></td>
-                        <td>2</td>
-                        <td>A CRT-glow vector twin-stick shoot'em up in Go: a 16-stage campaign, destructible rock, and an endless one-way Rift</td>
-                        <td>2026-07-15T09:37:26Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>syntaxia-code-rpg</td>
-                        <td><a href="https://github.com/ismetvahidzade986-sketch/syntaxia-code-rpg">https://github.com/ismetvahidzade986-sketch/syntaxia-code-rpg</a></td>
-                        <td>2</td>
-                        <td>Learn JavaScript by playing an RPG. 43 quests that teach in steps, a sandboxed in-browser code runner, a click-any-word glossary, 20 languages, installable and fully offline. No signup, no ads, no backend.</td>
-                        <td>2026-07-18T11:54:12Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>GreeblisVR</td>
-                        <td><a href="https://github.com/GreeblisVR/GreeblisVR">https://github.com/GreeblisVR/GreeblisVR</a></td>
-                        <td>2</td>
-                        <td>Welcome to Greeblis World VR !</td>
-                        <td>2026-07-19T01:12:39Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Roblox-Script-Executor</td>
-                        <td><a href="https://github.com/sapphireflixx/Roblox-Script-Executor">https://github.com/sapphireflixx/Roblox-Script-Executor</a></td>
-                        <td>2</td>
-                        <td>High-performance script executor for Windows</td>
-                        <td>2026-07-16T08:15:48Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>cortex</td>
-                        <td><a href="https://github.com/PdB333/cortex">https://github.com/PdB333/cortex</a></td>
-                        <td>2</td>
-                        <td>A Windows runtime analysis toolkit combining memory scanning, debugging, automation, and AI-friendly APIs.</td>
-                        <td>2026-07-14T22:48:38Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>claude-royale</td>
-                        <td><a href="https://github.com/adrianoreinert/claude-royale">https://github.com/adrianoreinert/claude-royale</a></td>
-                        <td>2</td>
-                        <td>Real-time multiplayer Clash Royale-style battler in the browser - Phaser 3 + React + Colyseus, authoritative server, deterministic shared simulation, 2.5D landscape PWA</td>
-                        <td>2026-07-15T20:35:13Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Snaik</td>
-                        <td><a href="https://github.com/HypnoLaser/Snaik">https://github.com/HypnoLaser/Snaik</a></td>
-                        <td>2</td>
-                        <td>Snaik is a neon-themed, retro style arcade game. Created from scratch with JS, CSS, & HTML.</td>
-                        <td>2026-07-16T13:54:31Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>demo-game</td>
-                        <td><a href="https://github.com/mcp-gtw/demo-game">https://github.com/mcp-gtw/demo-game</a></td>
-                        <td>2</td>
-                        <td>Multiplayer, MCP-controlled action game built on mcp-gtw.</td>
-                        <td>2026-07-19T13:53:18Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Bee-Swarm-Simulator-Remake</td>
-                        <td><a href="https://github.com/dante-el-gamer/Bee-Swarm-Simulator-Remake">https://github.com/dante-el-gamer/Bee-Swarm-Simulator-Remake</a></td>
-                        <td>2</td>
-                        <td>Just a remake of BSS (Bee Swarm Simulator)</td>
-                        <td>2026-07-17T01:00:26Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>IW4XCP</td>
-                        <td><a href="https://github.com/Teamemories/IW4XCP">https://github.com/Teamemories/IW4XCP</a></td>
-                        <td>2</td>
-                        <td>🎮 IW4x with Esay to Use Control Panel </td>
-                        <td>2026-07-22T03:18:21Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Pythemc-Voxelgame</td>
-                        <td><a href="https://github.com/AntacidDT/Pythemc-Voxelgame">https://github.com/AntacidDT/Pythemc-Voxelgame</a></td>
-                        <td>2</td>
-                        <td>Minecraft similar game (originally a competition purpose, then it went too far). Utilizes its own engine called Pythkernel with OpenGL and Python3.</td>
-                        <td>2026-07-17T13:45:12Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>NeuroTrip</td>
-                        <td><a href="https://github.com/Nerolithos/NeuroTrip">https://github.com/Nerolithos/NeuroTrip</a></td>
-                        <td>6</td>
-                        <td>大脑谜境(NeuroTrip)是一场穿越人类意识的迷幻旅行。借助 AI、神经科学与InfoVIs，你将“反主为客”地体验视觉如何欺骗、语言如何塑造、记忆如何重写、恐惧如何预测。欢迎来到你的大脑…但你在学习它时，它也在影响你…                   NeuroTrip —— A trippy experience if the brain functions as a machine and takes you on a trip, making you a part of your brain instead of it being inside of you.</td>
-                        <td>2026-07-23T01:04:10Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>PDD-Software-Security-Report</td>
-                        <td><a href="https://github.com/tzdwindows/PDD-Software-Security-Report">https://github.com/tzdwindows/PDD-Software-Security-Report</a></td>
-                        <td>1</td>
-                        <td>The software security report of China's software platform "Pinduoduo" 中国软件拼多多的软件安全报告，全程ai分析</td>
-                        <td>2026-07-16T23:24:31Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>planekey-vse</td>
-                        <td><a href="https://github.com/sustilliano/planekey-vse">https://github.com/sustilliano/planekey-vse</a></td>
-                        <td>0</td>
-                        <td>planekey's Visual Studios IDE extension, with pk-client, an mcp server, and a predictive typing helper powered by your own project's code history so you dont recreate the same function over and over again.</td>
-                        <td>2026-07-17T16:41:25Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>ianygo-trial-reset</td>
-                        <td><a href="https://github.com/Yoddikko/ianygo-trial-reset">https://github.com/Yoddikko/ianygo-trial-reset</a></td>
-                        <td>0</td>
-                        <td>No description provided.</td>
-                        <td>2026-07-18T12:04:31Z</td>
-                    </tr>
-                
-                    <tr>
-                        <td>Reverse-Engineering</td>
-                        <td><a href="https://github.com/girishlade111/Reverse-Engineering">https://github.com/girishlade111/Reverse-Engineering</a></td>
-                        <td>0</td>
-                        <td>A modular, extensible, and reusable framework for AI-powered reverse engineering of any software repository</td>
-                        <td>2026-07-24T06:15:18Z</td>
-                    </tr>
-                
             </tbody>
         </table>
+
+        <p class="mt-5">
+            <a data-toggle="collapse" href="#excluded" role="button" aria-expanded="false" aria-controls="excluded">
+                Show 0 excluded-as-noise repos (classifier audit)
+            </a>
+        </p>
+        <div class="collapse" id="excluded">
+            <table id="excludedTable" class="table table-sm table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Stars</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
     </div>
     <script>
         $(document).ready(function() {
-            $('#repos').DataTable({
+            $('#archive').DataTable({
                 colReorder: true,
-                "pageLength": 100,
-                "order": [[ 2, "desc" ]]  // sort by the third column (stars) in descending order
+                "pageLength": 50,
+                "order": [[ 1, "desc" ]]
+            });
+            $('#excludedTable').DataTable({
+                "pageLength": 25,
+                "order": [[ 1, "desc" ]]
             });
         });
     </script>
