@@ -89,7 +89,15 @@ GEMINI_API_URL = (
 CLASSIFY_BATCH_SIZE = 12
 CLASSIFY_BATCH_DELAY_SECONDS = 3
 README_EXCERPT_CHARS = 1500
-CLASSIFIER_SCHEMA_VERSION = 1
+
+# Bump this whenever CLASSIFIER_SYSTEM_PROMPT or CLASSIFIER_RESPONSE_SCHEMA
+# changes meaningfully (new categories, tightened relevance rules, etc).
+# state.pending_records() treats any stored classification whose
+# classifier_schema_version is older than this as needing a fresh verdict,
+# so a prompt refinement automatically re-judges the whole watchlist against
+# the new rules on the next run -- no separate manual "reclassify" step to
+# remember to run.
+CLASSIFIER_SCHEMA_VERSION = 2
 
 # Display thresholds.
 RELEVANT_CONFIDENCE_THRESHOLD = 0.5
@@ -99,25 +107,60 @@ BORDERLINE_CONFIDENCE_THRESHOLD = 0.3
 # returned for `relevant` -- belt-and-suspenders against a model that
 # ignores the system prompt's instruction, and lets already-classified
 # repos in the watchlist get re-filtered on the next render without needing
-# a fresh (costly) Gemini call.
-EXCLUDED_CATEGORIES = {"emulator"}
+# a fresh (costly) Gemini call. Each of these came from a real
+# false-positive pattern found by reviewing early report output (fan
+# translations, AI bots, decompilation *tools* vs. actual decompiled games,
+# mods, web/WASM builds).
+EXCLUDED_CATEGORIES = {"emulator", "mod", "tool", "web_port", "translation", "ai_bot"}
 
 CLASSIFIER_SYSTEM_PROMPT = """\
 You are screening GitHub repositories as candidates for porting to \
-PortMaster, a game-launcher/CFW for retro handheld devices.
+PortMaster, a game-launcher/CFW for retro handheld devices. A PortMaster \
+port is a complete, playable game that runs natively on the handheld \
+(SDL1/SDL2, native Linux binary) -- not a developer tool, not a web build, \
+not an add-on for something else.
 
-Relevant = open source games, SDL1/SDL2 games or ports, game engine \
-reimplementations, decompilation projects, reverse-engineering-of-games \
-projects.
+Relevant = a complete, playable game that is one of:
+- An SDL1/SDL2 game, or a port of an existing game to SDL1/SDL2
+- A LOVE2D game -- a finished, playable game built with LOVE, not a \
+generic engine/framework/tech-demo that merely uses LOVE
+- A reimplementation of a SPECIFIC existing/known game's engine (e.g. a \
+from-scratch engine that runs a named classic/commercial game's original \
+assets), producing something playable -- NOT a generic new engine meant \
+for arbitrary future games
+- A decompilation of a specific existing game that produces a playable, \
+runnable build of that game
+- The playable, runnable output of reverse-engineering a specific \
+existing game
 
-NOT relevant = student first-programming exercises, generic security/\
-hacking tools unrelated to games, tutorials, unrelated web/app projects, \
-trivial "yet another pong/snake clone" toy projects with no real \
-engineering substance, and emulators/emulation cores (explicitly out of \
-scope by user preference, even though they are otherwise well-engineered \
-game-adjacent software) -- still label these with category "emulator" and \
-set relevant to false, so they can be tracked and audited separately \
-rather than silently dropped.
+NOT relevant, even when otherwise well-engineered or game-adjacent -- \
+still classify these (do not just guess "noise"), so they can be audited \
+separately rather than silently conflated:
+- Emulators/emulation cores -> category "emulator" (out of scope by \
+explicit user preference)
+- Mods, content packs, multiplayer patches, or cosmetic add-ons for an \
+existing game or for another reimplementation project -- even an \
+excellent mod for an otherwise-relevant base project is not itself a port \
+candidate -> category "mod"
+- Developer tools/toolkits/utilities: decompilers, asset/code extractors, \
+file inspectors or patchers, installers/packagers, format converters -- \
+anything that helps someone else produce, analyze, or install a game, \
+rather than being the playable game itself -> category "tool"
+- Web/browser builds: Emscripten/WASM/JS-targeted ports -- PortMaster runs \
+native Linux/SDL2 binaries on handheld hardware, not a browser runtime \
+-> category "web_port"
+- Fan translations or localization-only patches of an existing game, with \
+no other engineering substance -> category "translation"
+- AI bots, solvers, or algorithm demos that play a game (e.g. a \
+Tetris-playing AI) rather than being a playable game themselves \
+-> category "ai_bot"
+- Generic/custom game engines, frameworks, raycasters, procedural \
+generators, voxel engines, or other reusable tech that is not itself a \
+complete, specific, playable game -> category "noise"
+- Student first-programming exercises, generic security/hacking tools \
+unrelated to games, tutorials, unrelated web/app projects, trivial \
+"yet another pong/snake clone" toy projects with no real engineering \
+substance -> category "noise"
 
 For each repo in the input array, return a verdict. Respond ONLY with a \
 JSON array matching the required schema, one object per input repo, each \
@@ -140,8 +183,17 @@ CLASSIFIER_RESPONSE_SCHEMA = {
                     "game_engine_reimplementation",
                     "decompilation",
                     "reverse_engineering",
-                    "emulator",
                     "other_game",
+                    # Not relevant, but broken out from generic "noise" so the
+                    # excluded-repos audit table shows *why* at a glance --
+                    # each of these came from a real false-positive pattern
+                    # found by reviewing early report output.
+                    "emulator",
+                    "mod",
+                    "tool",
+                    "web_port",
+                    "translation",
+                    "ai_bot",
                     "noise",
                 ],
             },

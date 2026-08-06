@@ -61,15 +61,24 @@ def upsert_repo(state, repo_id, record):
 
 
 def pending_records(state, exclude_ids=frozenset()):
-    """Records with no classification yet, or a prior classification attempt
-    that failed and fell back to pending. Excludes ids already handled
-    elsewhere this run (e.g. brand-new discoveries, tracked separately) to
-    avoid double-processing. These must be retried every run -- otherwise a
-    transient classifier outage (bad model name, API downtime) permanently
-    strands whatever was being discovered at the time."""
+    """Records needing a (re)classification pass: no classification yet, a
+    prior attempt that failed and fell back to pending, or a classification
+    made under an older CLASSIFIER_SCHEMA_VERSION (the prompt/category
+    schema changed since, so the old verdict is stale). Excludes ids already
+    handled elsewhere this run (e.g. brand-new discoveries, tracked
+    separately) to avoid double-processing.
+
+    This must be retried every run -- otherwise a transient classifier
+    outage (bad model name, API downtime) permanently strands whatever was
+    being discovered at the time, and a prompt refinement never gets applied
+    to repos classified under the old rules."""
     return [
         record
         for repo_id, record in state["repos"].items()
         if repo_id not in exclude_ids
-        and (record.get("classification") is None or record["classification"].get("relevant") is None)
+        and (
+            record.get("classification") is None
+            or record["classification"].get("relevant") is None
+            or record["classification"].get("classifier_schema_version", 0) < config.CLASSIFIER_SCHEMA_VERSION
+        )
     ]
